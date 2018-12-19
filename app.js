@@ -43,6 +43,14 @@ client.on("chat", function (channel, user, message, self) {
         client.action("TheBorgLIVE", "Hello " + user['display-name']);
         return;
     }
+
+    if (message.toLowerCase().includes("!follow")) {
+        client.action("TheBorgLIVE", "Please be sure to follow the stream so you can be notified when I go live next! It really helps the channel grow.");
+    }
+});
+
+client.on("hosting", function (channel, target, viewers) {
+    client.action("TheBorgLIVE", "Thank you, " + channel + " for hosting for " + viewers + " viewers!")
 });
 
 client.on("subscription", function (channel, username, method, message, userstate) {
