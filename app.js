@@ -18,21 +18,6 @@ const options = {
 
 const client = new tmi.client(options);
 
-$.ajax({
-    url: "https://api.twitch.tv/kraken/streams/TheBorgLIVE",
-    dataType: 'json',
-    headers: {
-        'Client-ID': your_client_id
-    },
-    success: function (channel) {
-        if (channel["stream"] == null) {
-            alert(nickname + " is not online");
-        } else {
-            alert(nickname + " is online!");
-        }
-    }
-});
-
 // Connect the client to the server..
 client.connect();
 client.on("connected", function (address, port) {
@@ -88,6 +73,24 @@ client.on("chat", function (channel, user, message, self) {
     if (message.toLowerCase().includes("hi") || message.toLowerCase().includes("hello") || message.toLowerCase().includes("sup")) {
         client.action("TheBorgLIVE", "Hello " + user['display-name']);
         return;
+    }
+
+    //TODO: $.ajex is causing an error, saying it is not defined.
+    if (message.toLowerCase() === "!uptime") {
+        $.ajax({
+            url: "https://api.twitch.tv/kraken/streams/TheBorgLIVE",
+            dataType: 'json',
+            headers: {
+                'Client-ID': your_client_id
+            },
+            success: function (channel) {
+                if (channel["stream"] == null) {
+                    console.log(nickname + " is not online");
+                } else {
+                    console.log(nickname + " is online!");
+                }
+            }
+        });
     }
 
 });
