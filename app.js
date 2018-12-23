@@ -1,6 +1,7 @@
 const botInfo = require("./botInfo");
 const tmi = require("tmi.js");
-
+//const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const axios = require("axios");
 
 const options = {
     options: {
@@ -28,7 +29,7 @@ client.on("chat", function (channel, user, message, self) {
     // Don't listen to my own messages..
     if (self) return;
 
-    // console.log(user);
+    //console.log(user);
     // console.log("Message" + message)
     let sender = user['display-name'];
 
@@ -75,22 +76,27 @@ client.on("chat", function (channel, user, message, self) {
         return;
     }
 
-    //TODO: $.ajex is causing an error, saying it is not defined.
-    if (message.toLowerCase() === "!uptime") {
-        $.ajax({
-            url: "https://api.twitch.tv/kraken/streams/TheBorgLIVE",
-            dataType: 'json',
-            headers: {
-                'Client-ID': your_client_id
-            },
-            success: function (channel) {
-                if (channel["stream"] == null) {
-                    console.log(nickname + " is not online");
-                } else {
-                    console.log(nickname + " is online!");
-                }
+
+    if (message.toLowerCase() == "!uptime") {
+
+        //user-id: 35608248
+        //https://api.twitch.tv/kraken/users/theborglive?client_id=feyz89r4w8ojd42b5vr90bzyz54ny2
+        axios.get("https://api.twitch.tv/kraken/streams/ninja?client_id=" + botInfo.clientID).then((response) => { //using Ninja's channel only as a test, will replace with mine once this command is working 100%
+            if (response.data.stream == null) {
+                console.log("Steam is offline");
+                return;
             }
+
+            const now = new Date;
+            const utc_timestamp = now.toISOString();
+
+            const streamTime = response.data.stream.created_at;
+
+            console.log("STREAM STARTED:" + streamTime)
+            console.log("TIME NOW: " + utc_timestamp);
+            console.log("DIFFERENCE: " + utc_timestamp - streamTime);
         });
+
     }
 
 });
@@ -104,6 +110,8 @@ client.on("subscription", function (channel, username, method, message, userstat
 });
 
 client.on("resub", function (channel, username, months, message, userstate, methods) {
+
     client.action("TheBorgLIVE", username + "has resubscribed for " + months + "months!")
 })
+
 
