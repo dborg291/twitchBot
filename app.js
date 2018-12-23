@@ -79,8 +79,6 @@ client.on("chat", function (channel, user, message, self) {
 
     if (message.toLowerCase() == "!uptime") {
 
-        //user-id: 35608248
-        //https://api.twitch.tv/kraken/users/theborglive?client_id=feyz89r4w8ojd42b5vr90bzyz54ny2
         axios.get("https://api.twitch.tv/kraken/streams/ninja?client_id=" + botInfo.clientID).then((response) => { //using Ninja's channel only as a test, will replace with mine once this command is working 100%
             if (response.data.stream == null) {
                 console.log("Steam is offline");
