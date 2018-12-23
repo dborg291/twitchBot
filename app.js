@@ -13,7 +13,7 @@ const options = {
         username: botInfo.username,
         password: botInfo.password
     },
-    channels: ["#TheBorgLIVE"]
+    channels: ["#" + botInfo.channel]
 };
 
 const client = new tmi.client(options);
@@ -21,7 +21,7 @@ const client = new tmi.client(options);
 // Connect the client to the server..
 client.connect();
 client.on("connected", function (address, port) {
-    client.action("TheBorgLIVE", "Hello Chat! I'm here and moderating over you!");
+    client.action(botInfo.channel, "Hello Chat! I'm here and moderating over you!");
 });
 
 client.on("chat", function (channel, user, message, self) {
@@ -50,12 +50,12 @@ client.on("chat", function (channel, user, message, self) {
         console.log("Chat is from a mod")
 
         if (message.toLowerCase().includes("!follow")) {
-            client.action("TheBorgLIVE", "Please be sure to follow the stream so you can be notified when I go live next! It really helps the channel grow and build a great community.");
+            client.action(botInfo.channel, "Please be sure to follow the stream so you can be notified when I go live next! It really helps the channel grow and build a great community.");
             return;
         }
 
         if (message.toLowerCase().includes("!twitchprime")) {
-            client.action("TheBorgLIVE", "If you wish to give back to the stream and you have Amazon Prime, you can get one free Twitch Prime subcription a month. You can subribe bu clicking above the stream or by clicking https://www.twitch.tv/products/theborgLIVE/ticket/new");
+            client.action(botInfo.channel, "If you wish to give back to the stream and you have Amazon Prime, you can get one free Twitch Prime subscription a month. You can subscribe by clicking above the stream or by clicking https://www.twitch.tv/products/theborgLIVE/ticket/new");
             return;
         }
     }
@@ -71,7 +71,7 @@ client.on("chat", function (channel, user, message, self) {
 
     //EVERYONE
     if (message.toLowerCase().includes("hi") || message.toLowerCase().includes("hello") || message.toLowerCase().includes("sup")) {
-        client.action("TheBorgLIVE", "Hello " + user['display-name']);
+        client.action(botInfo.channel, "Hello " + user['display-name']);
         return;
     }
 
@@ -81,7 +81,7 @@ client.on("chat", function (channel, user, message, self) {
         axios.get("https://api.twitch.tv/kraken/streams/theborgLIVE?client_id=" + botInfo.clientID).then((response) => {
             if (response.data.stream == null) {
                 console.log("Steam is offline");
-                client.action("TheBorgLIVE", "TheBorgLIVE is not currently streaming!");
+                client.action(botInfo.channel, botInfo.channel + " is not currently streaming!");
                 return;
             }
 
@@ -105,7 +105,7 @@ client.on("chat", function (channel, user, message, self) {
 
             console.log('UPTIME: ' + hoursDifference + ' hours ' + minutesDifference + ' minutes ' + secondsDifference + ' seconds ');
 
-            client.action("TheBorgLIVE", "TheBorgLIVE has been streaming for " + hoursDifference + ' hours ' + minutesDifference + ' minutes ' + secondsDifference + ' seconds!');
+            client.action(botInfo.channel, botInfo.channel + " has been streaming for " + hoursDifference + ' hours ' + minutesDifference + ' minutes ' + secondsDifference + ' seconds!');
         });
 
     }
@@ -113,20 +113,20 @@ client.on("chat", function (channel, user, message, self) {
 });
 
 client.on("hosting", function (channel, target, viewers) {
-    client.action("TheBorgLIVE", "Thank you, " + channel + " for hosting for " + viewers + " viewers!")
+    client.action(botInfo.channel, "Thank you, " + channel + " for hosting for " + viewers + " viewers!")
 });
 
 client.on("subscription", function (channel, username, method, message, userstate) {
-    client.action("TheBorgLIVE", "Thank you, " + username + "for subscribing!")
+    client.action(botInfo.channel, "Thank you, " + username + "for subscribing!")
 });
 
 client.on("follow", function (channel, username, method, message, userstate) {
-    client.action("TheBorgLIVE", "Thank you, " + username + "for following!")
+    client.action(botInfo.channel, "Thank you, " + username + "for following!")
 });
 
 client.on("resub", function (channel, username, months, message, userstate, methods) {
 
-    client.action("TheBorgLIVE", username + "has resubscribed for " + months + "months!")
+    client.action(botInfo.channel, username + "has resubscribed for " + months + "months!")
 })
 
 
