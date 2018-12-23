@@ -1,6 +1,5 @@
 const botInfo = require("./botInfo");
 const tmi = require("tmi.js");
-//const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const axios = require("axios");
 
 const options = {
@@ -79,20 +78,34 @@ client.on("chat", function (channel, user, message, self) {
 
     if (message.toLowerCase() == "!uptime") {
 
-        axios.get("https://api.twitch.tv/kraken/streams/ninja?client_id=" + botInfo.clientID).then((response) => { //using Ninja's channel only as a test, will replace with mine once this command is working 100%
+        axios.get("https://api.twitch.tv/kraken/streams/theborgLIVE?client_id=" + botInfo.clientID).then((response) => {
             if (response.data.stream == null) {
                 console.log("Steam is offline");
+                client.action("TheBorgLIVE", "TheBorgLIVE is not currently streaming!");
                 return;
             }
 
             const now = new Date;
-            const utc_timestamp = now.toISOString();
+            const utc_timestamp = now
 
-            const streamTime = response.data.stream.created_at;
+            const streamTime = new Date(response.data.stream.created_at);
 
-            console.log("STREAM STARTED:" + streamTime)
+            console.log("STREAM STARTED: " + streamTime);
             console.log("TIME NOW: " + utc_timestamp);
-            console.log("DIFFERENCE: " + utc_timestamp - streamTime);
+
+            var difference = utc_timestamp.getTime() - streamTime.getTime();
+
+            var hoursDifference = Math.floor(difference / 1000 / 60 / 60);
+            difference -= hoursDifference * 1000 * 60 * 60
+
+            var minutesDifference = Math.floor(difference / 1000 / 60);
+            difference -= minutesDifference * 1000 * 60
+
+            var secondsDifference = Math.floor(difference / 1000);
+
+            console.log('UPTIME: ' + hoursDifference + ' hours ' + minutesDifference + ' minutes ' + secondsDifference + ' seconds ');
+
+            client.action("TheBorgLIVE", "TheBorgLIVE has been streaming for " + hoursDifference + ' hours ' + minutesDifference + ' minutes ' + secondsDifference + ' seconds!');
         });
 
     }
@@ -105,6 +118,10 @@ client.on("hosting", function (channel, target, viewers) {
 
 client.on("subscription", function (channel, username, method, message, userstate) {
     client.action("TheBorgLIVE", "Thank you, " + username + "for subscribing!")
+});
+
+client.on("follow", function (channel, username, method, message, userstate) {
+    client.action("TheBorgLIVE", "Thank you, " + username + "for following!")
 });
 
 client.on("resub", function (channel, username, months, message, userstate, methods) {
