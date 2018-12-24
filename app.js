@@ -36,7 +36,7 @@ client.on("chat", function (channel, user, message, self) {
 
     //STREAMER ONLY COMMANDS
     if (channel.includes(user.username)) {
-        console.log("Chat is from the streamer")
+        console.log("Chat is from the streamer");
 
         if (message == "!leave") {
             client.action(channel, "It is time for me leave, please behave yourself in chat.");
@@ -47,7 +47,7 @@ client.on("chat", function (channel, user, message, self) {
 
     //MOD ONLY COMMANDS
     if (user['mod'] == true || channel.includes(user.username)) {
-        console.log("Chat is from a mod")
+        console.log("Chat is from a mod");
 
         if (message.toLowerCase().includes("!follow")) {
             client.action(botInfo.channel, "Please be sure to follow the stream so you can be notified when I go live next! It really helps the channel grow and build a great community.");
@@ -62,7 +62,7 @@ client.on("chat", function (channel, user, message, self) {
 
     //NON-MOD COMMANDS
     if (!user['mod']) {
-        console.log("Chat is not from a mod")
+        console.log("Chat is not from a mod");
         if (message.includes("www.") || message.includes(".com")) {
             client.timeout(channel, sender, 30, "Ask before sending links");
             return;
@@ -85,8 +85,8 @@ client.on("chat", function (channel, user, message, self) {
                 return;
             }
 
-            const now = new Date;
-            const utc_timestamp = now
+            const now = new Date();
+            const utc_timestamp = now;
 
             const streamTime = new Date(response.data.stream.created_at);
 
@@ -96,10 +96,10 @@ client.on("chat", function (channel, user, message, self) {
             var difference = utc_timestamp.getTime() - streamTime.getTime();
 
             var hoursDifference = Math.floor(difference / 1000 / 60 / 60);
-            difference -= hoursDifference * 1000 * 60 * 60
+            difference -= hoursDifference * 1000 * 60 * 60;
 
             var minutesDifference = Math.floor(difference / 1000 / 60);
-            difference -= minutesDifference * 1000 * 60
+            difference -= minutesDifference * 1000 * 60;
 
             var secondsDifference = Math.floor(difference / 1000);
 
@@ -108,25 +108,26 @@ client.on("chat", function (channel, user, message, self) {
             client.action(botInfo.channel, botInfo.channel + " has been streaming for " + hoursDifference + ' hours ' + minutesDifference + ' minutes ' + secondsDifference + ' seconds!');
         });
 
+        return;
     }
 
 });
 
 client.on("hosting", function (channel, target, viewers) {
-    client.action(botInfo.channel, "Thank you, " + channel + " for hosting for " + viewers + " viewers!")
+    client.action(botInfo.channel, "Thank you, " + channel + " for hosting for " + viewers + " viewers!");
 });
 
 client.on("subscription", function (channel, username, method, message, userstate) {
-    client.action(botInfo.channel, "Thank you, " + username + "for subscribing!")
+    client.action(botInfo.channel, "Thank you, " + username + "for subscribing!");
 });
 
 client.on("follow", function (channel, username, method, message, userstate) {
-    client.action(botInfo.channel, "Thank you, " + username + "for following!")
+    client.action(botInfo.channel, "Thank you, " + username + "for following!");
 });
 
 client.on("resub", function (channel, username, months, message, userstate, methods) {
 
-    client.action(botInfo.channel, username + "has resubscribed for " + months + "months!")
-})
+    client.action(botInfo.channel, username + "has resubscribed for " + months + "months!");
+});
 
 
