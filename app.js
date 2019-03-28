@@ -67,6 +67,11 @@ client.on("chat", function (channel, user, message, self) {
             client.timeout(channel, sender, 30, "Ask before sending links");
             return;
         }
+
+        if (message.toLowerCase().includes("!discord")) {
+            client.action(botInfo.channel, "If you want to join my Discord, here is the link! " + botInfo.discordLink);
+            return;
+        }
     }
 
     //EVERYONE
@@ -75,6 +80,10 @@ client.on("chat", function (channel, user, message, self) {
         return;
     }
 
+    if (message.toLowerCase().includes("good bot")) {
+        client.action(botInfo.channel, "Thanks for the complement " + user.username + "!");
+        return;
+    }
 
     if (message.toLowerCase() == "!uptime") {
 
