@@ -19,11 +19,13 @@ const options = {
 const client = new tmi.client(options);
 
 var permitArray = [];
+var randomMessage;
 
 // Connect the client to the server..
 client.connect();
 client.on("connected", function (address, port) {
     client.action(botInfo.channel, "Hello Chat! I'm here and moderating over you!");
+    randomMessage = setInterval(randomCommand, 600000); //call the randomCommand function every 10 min
 });
 
 client.on("chat", function (channel, user, message, self) {
@@ -42,7 +44,8 @@ client.on("chat", function (channel, user, message, self) {
 
         if (message == "!leave") {
             client.action(channel, "It is time for me leave, please behave yourself in chat.");
-            client.disconnect();
+            clearInterval(randomMessage); //stop sending a message every 10 min
+            client.disconnect(); //leave from the chat
             return;
         }
     }
@@ -104,7 +107,7 @@ client.on("chat", function (channel, user, message, self) {
     }
 
     if(message.toLowerCase().includes("!loot")){
-        client.action(botInfo.channel, "To send a messgae go to: https://loots.com/theborglive")
+        client.action(botInfo.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae and have it go to: https://loots.com/theborglive")
     }
 
     if(message.toLowerCase().includes("!commands")){
@@ -163,10 +166,23 @@ client.on("resub", function (channel, username, months, message, userstate, meth
     client.action(botInfo.channel, userstate['display-name'] + "has resubscribed for " + months + "months!");
 });
 
+//removes the element from the array
 function arrayRemove(arr, value) {
 
     return arr.filter(function(ele){
         return ele != value;
     });
  
- }
+}
+
+//send a random message to the chat
+function randomCommand(){
+    var random = Math.floor(Math.random() * 3) + 1; // returns a random integer from 1 to 10
+    if(random == 1){ //follow
+        client.action(botInfo.channel, "Please be sure to follow the stream so you can be notified when I go live next! It really helps the channel grow and build a great community.");
+    }else if(random == 2){ //discord
+        client.action(botInfo.channel, "If you want to join my Discord, here is the link! " + botInfo.discordLink);
+    }else if(random == 3){ //loot
+        client.action(botInfo.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae and have it go to: https://loots.com/theborglive")
+    }
+}
