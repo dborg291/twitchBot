@@ -18,6 +18,8 @@ const options = {
 
 const client = new tmi.client(options);
 
+var permitArray = [];
+
 // Connect the client to the server..
 client.connect();
 client.on("connected", function (address, port) {
@@ -29,7 +31,7 @@ client.on("chat", function (channel, user, message, self) {
     if (self) return;
 
     //console.log(user);
-    // console.log("Message" + message)
+    console.log("Message" + message)
     let sender = user['display-name'];
 
 
@@ -58,31 +60,55 @@ client.on("chat", function (channel, user, message, self) {
             client.action(botInfo.channel, "If you wish to give back to the stream and you have Amazon Prime, you can get one free Twitch Prime subscription a month. You can subscribe by clicking above the stream or by clicking https://www.twitch.tv/products/theborgLIVE/ticket/new");
             return;
         }
+
+        if(message.toLowerCase().includes("!permit")){ //Allows chaters to send one link
+            var atIndex = message.indexOf("@");  //Mods/Streamer must @ the user they want to permit so its correct
+            var permitedUser = message.substring(atIndex+1); //find the start of the user's name
+            permitArray.push(permitedUser); //add the permited user to the array
+            console.log(permitArray); 
+            client.action(botInfo.channel, "@" + permitedUser + " you are allowed to post one link.");
+            return;
+        }
     }
 
     //NON-MOD COMMANDS
     if (!user['mod']) {
         console.log("Chat is not from a mod");
-        if (message.includes("www.") || message.includes(".com")) {
-            client.timeout(channel, sender, 30, "Ask before sending links");
+        if (message.includes("www.") || message.includes(".com") || message.includes(".net") || message.includes(".org") || message.includes(".edu") || message.includes(".info") || message.includes(".gov") || message.includes(".mil") || message.includes(".biz")) { //chat must be a link
+            if(permitArray.indexOf(sender) != -1){ //check if the user has bene permited
+                permitArray = arrayRemove(permitArray, sender); //remove the user from the permited array
+                console.log(permitArray);
+            client.action(botInfo.channel, "@" + sender + " you used your one link."); 
             return;
-        }
-
-        if (message.toLowerCase().includes("!discord")) {
-            client.action(botInfo.channel, "If you want to join my Discord, here is the link! " + botInfo.discordLink);
+            }else{ //user has not been permited
+            client.timeout(channel, sender, 30, "Ask before sending links"); //timeout the user
             return;
+            }
         }
     }
 
     //EVERYONE
-    if (message.toLowerCase().includes("hi") || message.toLowerCase().includes("hello") || message.toLowerCase().includes("sup")) {
+    if (message.toLowerCase().includes("hi ") || message.toLowerCase().includes("hello ") || message.toLowerCase().includes("sup ") || message.toLowerCase().includes("hey ") || message.toLowerCase().includes("whats up ")) {
         client.action(botInfo.channel, "Hello " + user['display-name']);
         return;
     }
 
-    if (message.toLowerCase().includes("good bot")) {
-        client.action(botInfo.channel, "Thanks for the complement " + user.username + "!");
+    if (message.toLowerCase().includes("!discord")) {
+        client.action(botInfo.channel, "If you want to join my Discord, here is the link! " + botInfo.discordLink);
         return;
+    }
+
+    if (message.toLowerCase().includes("good bot")) {
+        client.action(botInfo.channel, "Thanks for the complement " + user['display-name'] + "!");
+        return;
+    }
+
+    if(message.toLowerCase().includes("!loot")){
+        client.action(botInfo.channel, "To send a messgae go to: https://loots.com/theborglive")
+    }
+
+    if(message.toLowerCase().includes("!commands")){
+        client.action(botInfo.channel, "!follow    !twitchprime    !discord    !loot    !uptime    !permit    !leave    NOTE:  Some commands can only be used a mod or the streamer.")
     }
 
     if (message.toLowerCase() == "!uptime") {
@@ -119,7 +145,6 @@ client.on("chat", function (channel, user, message, self) {
 
         return;
     }
-
 });
 
 client.on("hosting", function (channel, target, viewers) {
@@ -127,16 +152,21 @@ client.on("hosting", function (channel, target, viewers) {
 });
 
 client.on("subscription", function (channel, username, method, message, userstate) {
-    client.action(botInfo.channel, "Thank you, " + username + "for subscribing!");
+    client.action(botInfo.channel, "Thank you, " + userstate['display-name'] + "for subscribing!");
 });
 
 client.on("follow", function (channel, username, method, message, userstate) {
-    client.action(botInfo.channel, "Thank you, " + username + "for following!");
+    client.action(botInfo.channel, "Thank you, " + userstate['display-name'] + "for following!");
 });
 
 client.on("resub", function (channel, username, months, message, userstate, methods) {
-
-    client.action(botInfo.channel, username + "has resubscribed for " + months + "months!");
+    client.action(botInfo.channel, userstate['display-name'] + "has resubscribed for " + months + "months!");
 });
 
+function arrayRemove(arr, value) {
 
+    return arr.filter(function(ele){
+        return ele != value;
+    });
+ 
+ }
