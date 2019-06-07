@@ -118,10 +118,12 @@ client.on("chat", function (channel, user, message, self) {
 
     if(message.toLowerCase().includes("!loot")){
         client.action(botInfo.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae and have it go to: https://loots.com/theborglive")
+        return;
     }
 
     if(message.toLowerCase().includes("!commands")){
         client.action(botInfo.channel, "!follow    !twitchprime    !discord    !loot    !uptime    !permit    !leave    NOTE:  Some commands can only be used a mod or the streamer.")
+        return;
     }
 
     if (message.includes('!song')) {
@@ -131,11 +133,18 @@ client.on("chat", function (channel, user, message, self) {
             }else{
                 let song = json.toString();
                 console.log("SONG = " + song)
+
+                if(song.includes('Not playing or private session.')){
+                client.action(botInfo.channel,"No song is currently being played.");
+                return;
+                }
+
                 let artist = song.substring(2, song.indexOf('-'))
                 console.log("ARTIST = " + artist)
                 let songName = song.substring(song.indexOf('"') + 1, song.lastIndexOf('"'))
                 console.log('SONG NAME = ' + songName)
                 client.action(botInfo.channel,"Current Song: " + songName + " by " + artist);
+                return;
             }
         });
     }
@@ -178,18 +187,22 @@ client.on("chat", function (channel, user, message, self) {
 
 client.on("hosting", function (channel, target, viewers) {
     client.action(botInfo.channel, "Thank you, " + channel + " for hosting for " + viewers + " viewers!");
+    return;
 });
 
 client.on("subscription", function (channel, username, method, message, userstate) {
     client.action(botInfo.channel, "Thank you, " + userstate['display-name'] + "for subscribing!");
+    return;
 });
 
 client.on("follow", function (channel, username, method, message, userstate) {
     client.action(botInfo.channel, "Thank you, " + userstate['display-name'] + "for following!");
+    return;
 });
 
 client.on("resub", function (channel, username, months, message, userstate, methods) {
     client.action(botInfo.channel, userstate['display-name'] + "has resubscribed for " + months + "months!");
+    return;
 });
 
 //removes the element from the array
@@ -211,8 +224,10 @@ function randomCommand(){
     }else if(random == 3){ //loot
         client.action(botInfo.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae and have it go to: https://loots.com/theborglive")
     }
+    return;
 }
 
 function runCommerical(){
     // client.say(botInfo.channel, "/commercial");
+    return;
 }
