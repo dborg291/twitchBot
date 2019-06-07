@@ -1,6 +1,14 @@
 const botInfo = require("./botInfo");
 const tmi = require("tmi.js");
 const axios = require("axios");
+const request = require('request');
+var SpotifyWebApi = require('spotify-web-api-node');
+
+var spotifyApi = new SpotifyWebApi({
+	clientId: botInfo.spotifyClientID,
+	clientSecret: botInfo.spotifyClientSecret,
+	redirectUri: botInfo.spotifyRedirectURI
+  });
 
 const options = {
     options: {
@@ -112,6 +120,22 @@ client.on("chat", function (channel, user, message, self) {
 
     if(message.toLowerCase().includes("!commands")){
         client.action(botInfo.channel, "!follow    !twitchprime    !discord    !loot    !uptime    !permit    !leave    NOTE:  Some commands can only be used a mod or the streamer.")
+    }
+
+    if (message.includes('!song')) {
+        request({url: botInfo.spofityAPILink, json: true}, function(err, res, json) {
+            if (err) {
+                throw err;
+            }else{
+                let song = json.toString();
+                console.log("SONG = " + song)
+                let artist = song.substring(2, song.indexOf('-'))
+                console.log("ARTIST = " + artist)
+                let songName = song.substring(song.indexOf('"') + 1, song.lastIndexOf('"'))
+                console.log('SONG NAME = ' + songName)
+                client.action(botInfo.channel,"Current Song: " + songName + " by " + artist);
+            }
+        });
     }
 
     if (message.toLowerCase() == "!uptime") {
