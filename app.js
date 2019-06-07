@@ -34,6 +34,7 @@ client.connect();
 client.on("connected", function (address, port) {
     client.action(botInfo.channel, "Hello Chat! I'm here and moderating over you!");
     randomMessage = setInterval(randomCommand, 600000); //call the randomCommand function every 10 min
+    playCommerial = setInterval(runCommerical, 1800000); //runs a commerical every 30 min
 });
 
 client.on("chat", function (channel, user, message, self) {
@@ -53,6 +54,7 @@ client.on("chat", function (channel, user, message, self) {
         if (message == "!leave") {
             client.action(channel, "It is time for me leave, please behave yourself in chat.");
             clearInterval(randomMessage); //stop sending a message every 10 min
+            clearInterval(playCommerial);
             client.disconnect(); //leave from the chat
             return;
         }
@@ -209,4 +211,8 @@ function randomCommand(){
     }else if(random == 3){ //loot
         client.action(botInfo.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae and have it go to: https://loots.com/theborglive")
     }
+}
+
+function runCommerical(){
+    // client.say(botInfo.channel, "/commercial");
 }
