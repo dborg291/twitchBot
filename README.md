@@ -18,7 +18,7 @@
 - Send a promotional message, such as !follow, !twitchprime, !discord, or !loot, at random every 10 minutes
 - Automatically run a 30 second commercial every 30 minutes
 
-**Installation/Setup**
+**Installation/Setup:**
 
 1. Clone Repo
 2. `npm install`
