@@ -15,7 +15,7 @@
     - !commands - send a message displaying all the commands that are available to be used in the chat (Everyone)
 - Notify chat when a viewer has; subscribed, re-subscribed, or started hosting the channel
 - Automatically time-out viewers (who are not mods or the streamer) for sending a link, without already having been permitted to send one
-- Send a promotional message, such !follow, !twitchprime, !discord, or !loot, at random every 10 minutes
+- Send a promotional message, such as !follow, !twitchprime, !discord, or !loot, at random every 10 minutes
 - Automatically run a 30 second commercial every 30 minutes
 
 **Installation/Setup**
