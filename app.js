@@ -127,7 +127,7 @@ client.on("chat", function (channel, user, message, self) {
     }
 
     if (message.includes('!song')) {
-        request({url: botInfo.spofityAPILink, json: true}, function(err, res, json) {
+        request({url: botInfo.spoiftyAPILink, json: true}, function(err, res, json) {
             if (err) {
                 throw err;
             }else{
