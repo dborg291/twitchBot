@@ -34,7 +34,7 @@ client.connect();
 client.on("connected", function (address, port) {
     client.action(botInfo.channel, "Hello Chat! I'm here and moderating over you!");
     randomMessage = setInterval(randomCommand, 600000); //call the randomCommand function every 10 min
-    playCommerial = setInterval(runCommerical, 1800000); //runs a commerical every 30 min
+    // playCommerial = setInterval(runCommerical, 1800000); //runs a commerical every 30 min
 });
 
 client.on("chat", function (channel, user, message, self) {
@@ -54,7 +54,7 @@ client.on("chat", function (channel, user, message, self) {
         if (message == "!leave") {
             client.action(channel, "It is time for me leave, please behave yourself in chat.");
             clearInterval(randomMessage); //stop sending a message every 10 min
-            clearInterval(playCommerial);
+            // clearInterval(playCommerial); //stop sending a play commerial command every 30 min
             client.disconnect(); //leave from the chat
             return;
         }
@@ -228,6 +228,6 @@ function randomCommand(){
 }
 
 function runCommerical(){
-    // client.say(botInfo.channel, "/commercial");
+    client.say(botInfo.channel, "/commercial");
     return;
 }
