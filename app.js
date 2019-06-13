@@ -33,7 +33,7 @@ var randomMessage;
 client.connect();
 client.on("connected", function (address, port) {
     client.action(botInfo.channel, "Hello Chat! I'm here and moderating over you!");
-    randomMessage = setInterval(randomCommand, 600000); //call the randomCommand function every 10 min
+    randomMessage = setInterval(randomCommand, 1800000); //call the randomCommand function every 30 min
     // playCommerial = setInterval(runCommerical, 1800000); //runs a commerical every 30 min
 });
 
@@ -117,7 +117,7 @@ client.on("chat", function (channel, user, message, self) {
     }
 
     if(message.toLowerCase().includes("!loot")){
-        client.action(botInfo.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae and have it go to: https://loots.com/theborglive")
+        client.action(botInfo.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae go to: https://loots.com/theborglive")
         return;
     }
 
@@ -222,7 +222,7 @@ function randomCommand(){
     }else if(random == 2){ //discord
         client.action(botInfo.channel, "If you want to join my Discord, here is the link! " + botInfo.discordLink);
     }else if(random == 3){ //loot
-        client.action(botInfo.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae and have it go to: https://loots.com/theborglive")
+        client.action(botInfo.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae go to: https://loots.com/theborglive")
     }
     return;
 }
