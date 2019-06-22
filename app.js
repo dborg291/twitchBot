@@ -75,7 +75,7 @@ client.on("chat", function (channel, user, message, self) {
         }
 
         if(message.toLowerCase().includes("!permit")){ //Allows chaters to send one link
-            var atIndex = message.indexOf("@");  //Mods/Streamer must @ the user they want to permit so its correct
+            var atIndex = message.indexOf(" ");  //Mods/Streamer must @ the user they want to permit so its correct
             var permitedUser = message.substring(atIndex+1); //find the start of the user's name
             permitArray.push(permitedUser); //add the permited user to the array
             console.log(permitArray); 
