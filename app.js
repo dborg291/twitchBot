@@ -26,7 +26,7 @@ const options = {
 
 const client = new tmi.client(options);
 
-var permitArray = [];
+var permitArray = [];2
 var randomMessage;
 
 // Connect the client to the server..
@@ -82,6 +82,13 @@ client.on("chat", function (channel, user, message, self) {
             client.action(botInfo.channel, "@" + permitedUser + " you are allowed to post one link.");
             return;
         }
+
+        if(message.toLowerCase().includes("!so")){
+            var atIndex = message.indexOf("@");
+            var shoutoutUser = message.substring(atIndex+1);
+            client.action(botInfo.channel, "Everyone give " + shoutoutUser + " a follow at http://www.Twitch.tv/" + shoutoutUser + " They are a beast!");
+            return;
+        }
     }
 
     //NON-MOD COMMANDS
@@ -122,7 +129,7 @@ client.on("chat", function (channel, user, message, self) {
     }
 
     if(message.toLowerCase().includes("!commands")){
-        client.action(botInfo.channel, "!follow    !twitchprime    !discord    !loot    !uptime    !permit    !leave    NOTE:  Some commands can only be used a mod or the streamer.")
+        client.action(botInfo.channel, "!follow    !twitchprime    !discord    !loot    !uptime    !permit  !so    !leave    NOTE:  Some commands can only be used a mod or the streamer.")
         return;
     }
 
