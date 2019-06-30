@@ -163,7 +163,7 @@ client.on("chat", function (channel, user, message, self) {
     }
 
     if(message.toLowerCase().includes("!commands")){
-        client.action(botInfo.channel, "!follow    !twitchprime    !discord    !loot    !uptime    !permit  !so    !leave    NOTE:  Some commands can only be used a mod or the streamer.")
+        client.action(botInfo.channel, "!follow    !twitchprime    !discord    !loot    !uptime    !permit  !so    !poll    !leave    NOTE:  Some commands can only be used a mod or the streamer.")
         return;
     }
 
