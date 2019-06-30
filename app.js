@@ -26,7 +26,8 @@ const options = {
 
 const client = new tmi.client(options);
 
-var permitArray = [];2
+var permitArray = [];
+var pollMap = new Map();
 var randomMessage;
 
 // Connect the client to the server..
@@ -42,7 +43,7 @@ client.on("chat", function (channel, user, message, self) {
     if (self) return;
 
     //console.log(user);
-    console.log("Message" + message)
+    console.log("Message: " + message)
     let sender = user['display-name'];
 
 
@@ -87,6 +88,39 @@ client.on("chat", function (channel, user, message, self) {
             var atIndex = message.indexOf("@");
             var shoutoutUser = message.substring(atIndex+1);
             client.action(botInfo.channel, "Everyone give " + shoutoutUser + " a follow at http://www.Twitch.tv/" + shoutoutUser + " They are a beast!");
+            return;
+        }
+
+        if(message.toLowerCase().includes("!poll")){
+            var startQuestionIndex = message.indexOf(" "); //find the start of the poll question
+            var endQuestionIndex = message.indexOf("|"); //find the end of the question
+            var pollQuestion = message.substring(startQuestionIndex+1, endQuestionIndex).trim(); //store the qestiona and trim the spaces at the start and the end
+            var pollChat = pollQuestion; //add the question to the message that will be sent in chat in the end
+            console.log("Poll Question: " + pollQuestion);
+            var pollOptions = message.substring(endQuestionIndex+1); // find the options that can be chosen for the poll
+            console.log("Poll Options: " + pollOptions);
+
+            var reachedEnd = false;
+            while(!reachedEnd){
+                if(pollOptions.indexOf("|") >= 0) //if the last answer has not been reached
+                {
+                    var option = pollOptions.substring(0, pollOptions.indexOf("|")).trim(); //find the option and trim the spaces in the start and the end
+                    pollMap.set(option, 0); //add the option to map
+                    console.log(pollMap.keys());
+                    pollOptions = pollOptions.substring(pollOptions.indexOf("|")+1); //update pollOptions to not include the option that was just added to the map
+                }else{ //at the last option
+                    pollMap.set(pollOptions.trim(), 0); //add the rest of the pollOptions to the map
+                    console.log(pollMap.keys()); 
+                    reachedEnd = true; //set reachedEnd to end the while loop
+                }
+            }
+            var currentIndex = 0;
+                var pollLength = Array.from(pollMap.keys()).length - 1; //find the number of keys in the map
+                for(var i = 0 ; i <= pollLength; i++){
+                    var currentIndex = i; 
+                    pollChat = pollChat + " " + (currentIndex+1) + ") " + Array.from(pollMap.keys())[i]; //add each option to the chat that will be sent
+                }
+            client.action(botInfo.channel, pollChat);
             return;
         }
     }
