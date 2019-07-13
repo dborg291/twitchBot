@@ -14,7 +14,9 @@
     - !uptime - sends a message stating how long the streamer has been live for (Everyone)
     - !commands - send a message displaying all the commands that are available to be used in the chat (Everyone)
     - !so @[TwitchUserName] - send a message shouting out the specified user (Mods and Streamer)
-    - !poll [Poll Question] | [Option 1] | [Option 2] | [Option 3] - creates a poll for audience to answer, unlimited number of options are possible (Mods and Streamer)
+    - !poll [Poll Question] | [Option 1] | [Option 2] | [Option 3] - creates a poll for audience to answer, unlimited number of options are possible, but only one poll allowed at a time (Mods and Streamer)
+    - !closepoll - closes the currently active poll, sends a message saying; poll is closed, the number of votes from chat, and the vote distribution percentage (Mods and Streamer)
+    - !answer [Option Number] - collects the poll vote from the user (Everyone)
 - Notify chat when a viewer has; subscribed, re-subscribed, or started hosting the channel
 - Automatically time-out viewers (who are not mods or the streamer) for sending a link, without already having been permitted to send one
 - Send a promotional message, such as !follow, !twitchprime, !discord, or !loot, at random every 30 minutes
