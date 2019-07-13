@@ -1,6 +1,6 @@
 # twitchBot
 
-**What is it:** This is a chat bot that works can connect to any Twitch channel's chat. The bot is able to send various messages based on certain key messages being sent.
+**What is it:** This is a chat bot that can connect to any Twitch channel's chat. The bot is able to send various messages based on certain key messages being sent.
 
 **Main Features:**
 - Send messages based on the use of key messages
