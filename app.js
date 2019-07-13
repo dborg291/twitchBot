@@ -129,18 +129,21 @@ client.on("chat", function (channel, user, message, self) {
         }
 
         if(message.toLowerCase().includes("!closepoll")){
-            onGoingPoll = false;
-            var pollMessage = "";
-            for(var j = 0 ; j <= Array.from(pollMap.keys()).length - 1; j++){
-                pollMessage = pollMessage + Array.from(pollMap.keys())[j] + ") " + (parseFloat(pollMap.get(Array.from(pollMap.keys())[j])) / parseFloat(pollEntries)) * 100 + "% ";
-            }
-            client.action(botInfo.channel, "The current poll is now closed.");
-            client.action(botInfo.channel, "Total number of poll votes: " + pollEntries);
-            client.action(botInfo.channel, pollMessage);
+            if(onGoingPoll == true)
+            {
+                onGoingPoll = false;
+                var pollMessage = "";
+                for(var j = 0 ; j <= Array.from(pollMap.keys()).length - 1; j++){
+                    pollMessage = pollMessage + Array.from(pollMap.keys())[j] + ") " + (parseFloat(pollMap.get(Array.from(pollMap.keys())[j])) / parseFloat(pollEntries)) * 100 + "% ";
+                }
+                client.action(botInfo.channel, "The current poll is now closed.");
+                client.action(botInfo.channel, "Total number of poll votes: " + pollEntries);
+                client.action(botInfo.channel, pollMessage);
 
-            pollMap.clear();
-            pollEntries = 0;
-            pollAnswers = [];
+                pollMap.clear();
+                pollEntries = 0;
+                pollAnswers = [];
+            }
 
             return;
         }
