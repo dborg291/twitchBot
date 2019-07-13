@@ -28,6 +28,9 @@ const client = new tmi.client(options);
 
 var permitArray = [];
 var pollMap = new Map();
+var onGoingPoll = false;
+var pollEntries = 0;
+var pollAnswers = [];
 var randomMessage;
 
 // Connect the client to the server..
@@ -50,7 +53,7 @@ client.on("chat", function (channel, user, message, self) {
 
     //STREAMER ONLY COMMANDS
     if (channel.includes(user.username)) {
-        console.log("Chat is from the streamer");
+        // console.log("Chat is from the streamer");
 
         if (message == "!leave") {
             client.action(channel, "It is time for me leave, please behave yourself in chat.");
@@ -63,7 +66,7 @@ client.on("chat", function (channel, user, message, self) {
 
     //MOD ONLY COMMANDS
     if (user['mod'] == true || channel.includes(user.username)) {
-        console.log("Chat is from a mod");
+        // console.log("Chat is from a mod");
 
         if (message.toLowerCase().includes("!follow")) {
             client.action(botInfo.channel, "Please be sure to follow the stream so you can be notified when I go live next! It really helps the channel grow and build a great community.");
@@ -92,6 +95,7 @@ client.on("chat", function (channel, user, message, self) {
         }
 
         if(message.toLowerCase().includes("!poll")){
+            onGoingPoll = true;
             var startQuestionIndex = message.indexOf(" "); //find the start of the poll question
             var endQuestionIndex = message.indexOf("|"); //find the end of the question
             var pollQuestion = message.substring(startQuestionIndex+1, endQuestionIndex).trim(); //store the qestiona and trim the spaces at the start and the end
@@ -114,22 +118,39 @@ client.on("chat", function (channel, user, message, self) {
                     reachedEnd = true; //set reachedEnd to end the while loop
                 }
             }
-            var currentIndex = 0;
+                var currentIndex = 0;
                 var pollLength = Array.from(pollMap.keys()).length - 1; //find the number of keys in the map
                 for(var i = 0 ; i <= pollLength; i++){
-                    var currentIndex = i; 
+                    currentIndex = i; 
                     pollChat = pollChat + " " + (currentIndex+1) + ") " + Array.from(pollMap.keys())[i]; //add each option to the chat that will be sent
                 }
             client.action(botInfo.channel, pollChat);
+            return;
+        }
+
+        if(message.toLowerCase().includes("!closepoll")){
+            onGoingPoll = false;
+            var pollMessage = "";
+            for(var j = 0 ; j <= Array.from(pollMap.keys()).length - 1; j++){
+                pollMessage = pollMessage + Array.from(pollMap.keys())[j] + ") " + (parseFloat(pollMap.get(Array.from(pollMap.keys())[j])) / parseFloat(pollEntries)) * 100 + "% ";
+            }
+            client.action(botInfo.channel, "The current poll is now closed.");
+            client.action(botInfo.channel, "Total number of poll votes: " + pollEntries);
+            client.action(botInfo.channel, pollMessage);
+
+            pollMap.clear();
+            pollEntries = 0;
+            pollAnswers = [];
+
             return;
         }
     }
 
     //NON-MOD COMMANDS
     if (!user['mod']) {
-        console.log("Chat is not from a mod");
+        // console.log("Chat is not from a mod");
         if (message.includes("www.") || message.includes(".com") || message.includes(".net") || message.includes(".org") || message.includes(".edu") || message.includes(".info") || message.includes(".gov") || message.includes(".mil") || message.includes(".biz")) { //chat must be a link
-            if(permitArray.indexOf(sender) != -1){ //check if the user has bene permited
+            if(permitArray.includes(sender)){ //check if the user has bene permited
                 permitArray = arrayRemove(permitArray, sender); //remove the user from the permited array
                 console.log(permitArray);
             client.action(botInfo.channel, "@" + sender + " you used your one link."); 
@@ -163,7 +184,38 @@ client.on("chat", function (channel, user, message, self) {
     }
 
     if(message.toLowerCase().includes("!commands")){
-        client.action(botInfo.channel, "!follow    !twitchprime    !discord    !loot    !uptime    !permit  !so    !poll    !leave    NOTE:  Some commands can only be used a mod or the streamer.")
+        client.action(botInfo.channel, "!follow    !twitchprime    !discord    !loot    !uptime    !permit  !so    !poll    !closepoll    !answer    !leave    NOTE:  Some commands can only be used a mod or the streamer.")
+        return;
+    }
+
+    if(message.toLowerCase().includes("!answer")){
+        if(onGoingPoll == true){
+            console.log(pollAnswers.includes(user['username']))
+            if(!pollAnswers.includes(user['username'])){
+                var answer = parseInt(message.substring(message.indexOf(" ") + 1), 10);
+                var mapKey = Array.from(pollMap.keys())[answer - 1];
+                console.log(pollMap);
+                console.log("POLL ANSWER : " + answer);
+                console.log("KEY: " + mapKey);
+                if(pollMap.has(mapKey)){
+                    pollMap.set(mapKey, (pollMap.get(mapKey)+1));
+                    pollEntries = pollEntries + 1;
+                    pollAnswers.push(user['username']);
+                    console.log(pollAnswers);
+                    console.log("POLL ENTIRES: " + pollEntries);
+                }else{
+                    client.say(botInfo.channel, "/w " + user['username'] + " Your did not send a valid poll response.");
+                }
+                console.log(pollMap);
+
+            }else{
+                client.say(botInfo.channel, "/w " + user['username'] + " You have already answered the current poll.");
+            }
+        }else{
+            client.say(botInfo.channel, "/w " + user['username'] + " There currently is not an active poll.");
+        }
+
+
         return;
     }
 
