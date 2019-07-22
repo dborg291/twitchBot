@@ -32,6 +32,7 @@ var onGoingPoll = false;
 var pollEntries = 0;
 var pollAnswers = [];
 var randomMessage;
+var welcomeMessae = true;
 
 // Connect the client to the server..
 client.connect();
@@ -147,6 +148,11 @@ client.on("chat", function (channel, user, message, self) {
 
             return;
         }
+
+        if(message.toLowerCase().includes("!togglewelcome")){
+            welcomeMessae = !welcomeMessae;
+            client.action(botInfo.channel, "Welcome message is now set to: " + welcomeMessae);
+        }
     }
 
     //NON-MOD COMMANDS
@@ -166,8 +172,8 @@ client.on("chat", function (channel, user, message, self) {
     }
 
     //EVERYONE
-    if (message.toLowerCase().includes("hi ") || message.toLowerCase().includes("hello ") || message.toLowerCase().includes("sup ") || message.toLowerCase().includes("hey ") || message.toLowerCase().includes("whats up ")) {
-        client.action(botInfo.channel, "Hello " + user['display-name']);
+    if ((message.toLowerCase().includes("hi") || message.toLowerCase().includes("hello") || message.toLowerCase().includes("sup") || message.toLowerCase().includes("hey") || message.toLowerCase().includes("whats up")) && !message.toLowerCase().includes("they")) {
+        // client.action(botInfo.channel, "Hello " + user['display-name']); //commented out since this is causing too many false postives, swtiched to using the join event for welcoming a user
         return;
     }
 
@@ -298,6 +304,16 @@ client.on("follow", function (channel, username, method, message, userstate) {
 
 client.on("resub", function (channel, username, months, message, userstate, methods) {
     client.action(botInfo.channel, userstate['display-name'] + "has resubscribed for " + months + "months!");
+    return;
+});
+
+client.on("join", (channel, username, self) => {
+    if(welcomeMessae == true)
+    {
+        client.action(botInfo.channel, "Welcome to the channel " + username);
+    }else{
+        console.log("Welcome message is set to false, therefore did not welcome: " + username);
+    }
     return;
 });
 
