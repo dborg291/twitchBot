@@ -2,6 +2,9 @@ const botInfo = require("./botInfo");
 const tmi = require("tmi.js");
 const axios = require("axios");
 const request = require('request');
+const CSVToJSON = require("csvtojson");
+const JSONToCSV = require("json2csv").parse;
+const FileSystem = require("fs");
 var SpotifyWebApi = require('spotify-web-api-node');
 
 var spotifyApi = new SpotifyWebApi({
@@ -31,8 +34,9 @@ var pollMap = new Map();
 var onGoingPoll = false;
 var pollEntries = 0;
 var pollAnswers = [];
+var currentViewers = [];
 var randomMessage;
-var welcomeMessae = true;
+var welcomeMessage = true;
 
 // Connect the client to the server..
 client.connect();
@@ -40,12 +44,12 @@ client.on("connected", function (address, port) {
     client.action(botInfo.channel, "Hello Chat! I'm here and moderating over you!");
     randomMessage = setInterval(randomCommand, 1800000); //call the randomCommand function every 30 min
     // playCommerial = setInterval(runCommerical, 1800000); //runs a commerical every 30 min
+    loyaltyPoints();
 });
 
 client.on("chat", function (channel, user, message, self) {
     // Don't listen to my own messages..
     if (self) return;
-
     //console.log(user);
     console.log("Message: " + message)
     let sender = user['display-name'];
@@ -150,8 +154,8 @@ client.on("chat", function (channel, user, message, self) {
         }
 
         if(message.toLowerCase().includes("!togglewelcome")){
-            welcomeMessae = !welcomeMessae;
-            client.action(botInfo.channel, "Welcome message is now set to: " + welcomeMessae);
+        welcomeMessage = !welcomeMessage;
+            client.action(botInfo.channel, "Welcome message is now set to: " + welcomeMessage);
         }
     }
 
@@ -308,7 +312,7 @@ client.on("resub", function (channel, username, months, message, userstate, meth
 });
 
 client.on("join", (channel, username, self) => {
-    if(welcomeMessae == true)
+    if(welcomeMessage == true)
     {
         client.action(botInfo.channel, "Welcome to the channel " + username);
     }else{
@@ -341,5 +345,72 @@ function randomCommand(){
 
 function runCommerical(){
     client.say(botInfo.channel, "/commercial");
+    return;
+}
+
+function loyaltyPoints(){
+    const url = botInfo.loyaltyPointURL;
+    axios.get(url).then((response) => {
+
+        for(i = 0; i < response.data.chatters.broadcaster.length; i++)
+        {
+            currentViewers.push(response.data.chatters.broadcaster[i]);
+        }
+        for(i = 0; i < response.data.chatters.moderators.length; i++)
+        {
+            currentViewers.push(response.data.chatters.moderators[i]);
+        }
+
+        for(i = 0; i < response.data.chatters.vips.length; i++)
+        {
+            currentViewers.push(response.data.chatters.vips[i]);
+        }
+        
+        for(i = 0; i < response.data.chatters.staff.length; i++)
+        {
+            currentViewers.push(response.data.chatters.staff[i]);
+        }
+
+        for(i = 0; i < response.data.chatters.admins.length; i++)
+        {
+            currentViewers.push(response.data.chatters.admins[i]);
+        }
+
+        for(i = 0; i < response.data.chatters.global_mods.length; i++)
+        {
+            currentViewers.push(response.data.chatters.global_mods[i]);
+        }
+
+        for(i = 0; i < response.data.chatters.viewers.length; i++)
+        {
+            currentViewers.push(response.data.chatters.viewers[i]);
+        }
+
+        CSVToJSON().fromFile("./viewerLoyalPoints.csv").then(source => {
+            for(i = 0; i < currentViewers.length; i++)
+            {
+                for(j = 0; j < source.length; j++){
+                    if(source[j].viewer == currentViewers[i])
+                    {
+                        var points = parseInt(source[j].points)
+                        points = points + 1;
+                        source[j].points = points;
+                        break;
+                    }else{
+                        if(j == (source.length-1)){
+                            source.push({
+                                "viewer": currentViewers[i],
+                                "points": "1"
+                            });
+                        }
+                    }
+                }
+            }
+
+            const csv = JSONToCSV(source, { fields: ["viewer", "points"] });
+            FileSystem.writeFileSync("./viewerLoyalPoints.csv", csv);
+        })
+    });
+    console.log("Updated current loyalty points!")
     return;
 }
