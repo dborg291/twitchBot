@@ -1,19 +1,23 @@
-const botInfo = require("./botInfo");
-const tmi = require("tmi.js");
-const axios = require("axios");
-const request = require('request');
-const CSVToJSON = require("csvtojson");
-const JSONToCSV = require("json2csv").parse;
-const FileSystem = require("fs");
-var SpotifyWebApi = require('spotify-web-api-node');
+import tmi, { UserNoticeState, Client, Options } from "tmi.js";
+import axios from "axios";
+import request from 'request';
+import CSVToJSON from "csvtojson";
+import JSONToCSV, { parse } from "json2csv";
+import fs from "fs";
+import SpotifyWebApi from "spotify-web-api-node";
+import { IConfiguration } from "./IConfiguration";
 
-var spotifyApi = new SpotifyWebApi({
-	clientId: botInfo.spotifyClientID,
-	clientSecret: botInfo.spotifyClientSecret,
-	redirectUri: botInfo.spotifyRedirectURI
+// constants
+import constants from "../config/constants.json";
+const config: IConfiguration = constants;
+
+let spotifyApi = new SpotifyWebApi({
+	clientId: config.spotifyClientID,
+	clientSecret: config.spotifyClientSecret,
+	redirectUri: config.spotifyRedirectURI
   });
 
-const options = {
+const options: Options = {
     options: {
         debug: true
     },
@@ -21,40 +25,38 @@ const options = {
         reconnect: true
     },
     identity: {
-        username: botInfo.username,
-        password: botInfo.password
+        username: config.username,
+        password: config.password
     },
-    channels: ["#" + botInfo.channel]
+    channels: ["#" + config.channel]
 };
 
-const client = new tmi.client(options);
+const client: Client = tmi.client(options);
 
-var permitArray = [];
-var pollMap = new Map();
-var onGoingPoll = false;
-var pollEntries = 0;
-var pollAnswers = [];
-var currentViewers = [];
-var randomMessage;
-var welcomeMessage = true;
+var permitArray: any[] = [];
+var pollMap: any = new Map();
+var onGoingPoll: boolean = false;
+var pollEntries: number = 0.0;
+var pollAnswers: any[] = [];
+var currentViewers: any[] = [];
+var randomMessage: any;
+var welcomeMessage: boolean = true;
 
 // Connect the client to the server..
 client.connect();
-client.on("connected", function (address, port) {
-    client.action(botInfo.channel, "Hello Chat! I'm here and moderating over you!");
+client.on("connected", (address: string, port: number) => {
+    client.action(config.channel, "Hello Chat! I'm here and moderating over you!");
     randomMessage = setInterval(randomCommand, 1800000); //call the randomCommand function every 30 min
     // playCommerial = setInterval(runCommerical, 1800000); //runs a commerical every 30 min
     loyaltyPoints();
 });
 
-client.on("chat", function (channel, user, message, self) {
+client.on("chat", (channel: string, user: UserNoticeState, message: string, self: boolean) => {
     // Don't listen to my own messages..
     if (self) return;
     //console.log(user);
     console.log("Message: " + message)
     let sender = user['display-name'];
-
-
 
     //STREAMER ONLY COMMANDS
     if (channel.includes(user.username)) {
@@ -74,12 +76,12 @@ client.on("chat", function (channel, user, message, self) {
         // console.log("Chat is from a mod");
 
         if (message.toLowerCase().includes("!follow")) {
-            client.action(botInfo.channel, "Please be sure to follow the stream so you can be notified when I go live next! It really helps the channel grow and build a great community.");
+            client.action(config.channel, "Please be sure to follow the stream so you can be notified when I go live next! It really helps the channel grow and build a great community.");
             return;
         }
 
         if (message.toLowerCase().includes("!twitchprime")) {
-            client.action(botInfo.channel, "If you wish to give back to the stream and you have Amazon Prime, you can get one free Twitch Prime subscription a month. You can subscribe by clicking above the stream or by clicking https://www.twitch.tv/products/theborgLIVE/ticket/new");
+            client.action(config.channel, "If you wish to give back to the stream and you have Amazon Prime, you can get one free Twitch Prime subscription a month. You can subscribe by clicking above the stream or by clicking https://www.twitch.tv/products/theborgLIVE/ticket/new");
             return;
         }
 
@@ -87,15 +89,15 @@ client.on("chat", function (channel, user, message, self) {
             var atIndex = message.indexOf(" ");  //Mods/Streamer must @ the user they want to permit so its correct
             var permitedUser = message.substring(atIndex+1); //find the start of the user's name
             permitArray.push(permitedUser); //add the permited user to the array
-            console.log(permitArray); 
-            client.action(botInfo.channel, "@" + permitedUser + " you are allowed to post one link.");
+            console.log(permitArray);
+            client.action(config.channel, "@" + permitedUser + " you are allowed to post one link.");
             return;
         }
 
         if(message.toLowerCase().includes("!so")){
             var atIndex = message.indexOf("@");
             var shoutoutUser = message.substring(atIndex+1);
-            client.action(botInfo.channel, "Everyone give " + shoutoutUser + " a follow at http://www.Twitch.tv/" + shoutoutUser + " They are a beast!");
+            client.action(config.channel, "Everyone give " + shoutoutUser + " a follow at http://www.Twitch.tv/" + shoutoutUser + " They are a beast!");
             return;
         }
 
@@ -119,17 +121,17 @@ client.on("chat", function (channel, user, message, self) {
                     pollOptions = pollOptions.substring(pollOptions.indexOf("|")+1); //update pollOptions to not include the option that was just added to the map
                 }else{ //at the last option
                     pollMap.set(pollOptions.trim(), 0); //add the rest of the pollOptions to the map
-                    console.log(pollMap.keys()); 
+                    console.log(pollMap.keys());
                     reachedEnd = true; //set reachedEnd to end the while loop
                 }
             }
                 var currentIndex = 0;
                 var pollLength = Array.from(pollMap.keys()).length - 1; //find the number of keys in the map
                 for(var i = 0 ; i <= pollLength; i++){
-                    currentIndex = i; 
+                    currentIndex = i;
                     pollChat = pollChat + " " + (currentIndex+1) + ") " + Array.from(pollMap.keys())[i]; //add each option to the chat that will be sent
                 }
-            client.action(botInfo.channel, pollChat);
+            client.action(config.channel, pollChat);
             return;
         }
 
@@ -139,15 +141,15 @@ client.on("chat", function (channel, user, message, self) {
                 onGoingPoll = false;
                 var pollMessage = "";
                 for(var j = 0 ; j <= Array.from(pollMap.keys()).length - 1; j++){
-                    pollMessage = pollMessage + Array.from(pollMap.keys())[j] + ") " + (parseFloat(pollMap.get(Array.from(pollMap.keys())[j])) / parseFloat(pollEntries)) * 100 + "% ";
+                    pollMessage = pollMessage + Array.from(pollMap.keys())[j] + ") " + (parseFloat(pollMap.get(Array.from(pollMap.keys())[j])) / pollEntries) * 100 + "% ";
                 }
-                client.action(botInfo.channel, "The current poll is now closed.");
-                client.action(botInfo.channel, "Total number of poll votes: " + pollEntries);
-                client.action(botInfo.channel, pollMessage);
+                client.action(config.channel, "The current poll is now closed.");
+                client.action(config.channel, "Total number of poll votes: " + pollEntries);
+                client.action(config.channel, pollMessage);
 
                 pollMap.clear();
                 pollEntries = 0;
-                pollAnswers = [];
+                let pollAnswers = [];
             }
 
             return;
@@ -155,7 +157,7 @@ client.on("chat", function (channel, user, message, self) {
 
         if(message.toLowerCase().includes("!togglewelcome")){
         welcomeMessage = !welcomeMessage;
-            client.action(botInfo.channel, "Welcome message is now set to: " + welcomeMessage);
+            client.action(config.channel, "Welcome message is now set to: " + welcomeMessage);
         }
     }
 
@@ -166,10 +168,10 @@ client.on("chat", function (channel, user, message, self) {
             if(permitArray.includes(sender)){ //check if the user has bene permited
                 permitArray = arrayRemove(permitArray, sender); //remove the user from the permited array
                 console.log(permitArray);
-            client.action(botInfo.channel, "@" + sender + " you used your one link."); 
+            client.action(config.channel, "@" + sender + " you used your one link.");
             return;
             }else{ //user has not been permited
-            client.timeout(channel, sender, 30, "Ask before sending links"); //timeout the user
+            client.timeout(channel, sender || "", 30, "Ask before sending links"); //timeout the user
             return;
             }
         }
@@ -182,22 +184,22 @@ client.on("chat", function (channel, user, message, self) {
     }
 
     if (message.toLowerCase().includes("!discord")) {
-        client.action(botInfo.channel, "If you want to join my Discord, here is the link! " + botInfo.discordLink);
+        client.action(config.channel, "If you want to join my Discord, here is the link! " + config.discordLink);
         return;
     }
 
     if (message.toLowerCase().includes("good bot")) {
-        client.action(botInfo.channel, "Thanks for the complement " + user['display-name'] + "!");
+        client.action(config.channel, "Thanks for the complement " + user['display-name'] + "!");
         return;
     }
 
     if(message.toLowerCase().includes("!loot")){
-        client.action(botInfo.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae go to: https://loots.com/theborglive")
+        client.action(config.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae go to: https://loots.com/theborglive")
         return;
     }
 
     if(message.toLowerCase().includes("!commands")){
-        client.action(botInfo.channel, "!follow    !twitchprime    !discord    !loot    !uptime    !permit  !so    !poll    !closepoll    !answer    !leave    NOTE:  Some commands can only be used a mod or the streamer.")
+        client.action(config.channel, "!follow    !twitchprime    !discord    !loot    !uptime    !permit  !so    !poll    !closepoll    !answer    !leave    NOTE:  Some commands can only be used a mod or the streamer.")
         return;
     }
 
@@ -217,15 +219,15 @@ client.on("chat", function (channel, user, message, self) {
                     console.log(pollAnswers);
                     console.log("POLL ENTIRES: " + pollEntries);
                 }else{
-                    client.say(botInfo.channel, "/w " + user['username'] + " Your did not send a valid poll response.");
+                    client.say(config.channel, "/w " + user['username'] + " Your did not send a valid poll response.");
                 }
                 console.log(pollMap);
 
             }else{
-                client.say(botInfo.channel, "/w " + user['username'] + " You have already answered the current poll.");
+                client.say(config.channel, "/w " + user['username'] + " You have already answered the current poll.");
             }
         }else{
-            client.say(botInfo.channel, "/w " + user['username'] + " There currently is not an active poll.");
+            client.say(config.channel, "/w " + user['username'] + " There currently is not an active poll.");
         }
 
 
@@ -233,7 +235,7 @@ client.on("chat", function (channel, user, message, self) {
     }
 
     if (message.includes('!song')) {
-        request({url: botInfo.spoiftyAPILink, json: true}, function(err, res, json) {
+        request({url: config.spoiftyAPILink, json: true}, function(err, res, json) {
             if (err) {
                 throw err;
             }else{
@@ -241,7 +243,7 @@ client.on("chat", function (channel, user, message, self) {
                 console.log("SONG = " + song)
 
                 if(song.includes('Not playing or private session.')){
-                client.action(botInfo.channel,"No song is currently being played.");
+                client.action(config.channel,"No song is currently being played.");
                 return;
                 }
 
@@ -249,7 +251,7 @@ client.on("chat", function (channel, user, message, self) {
                 console.log("ARTIST = " + artist)
                 let songName = song.substring(song.indexOf('"') + 1, song.lastIndexOf('"'))
                 console.log('SONG NAME = ' + songName)
-                client.action(botInfo.channel,"Current Song: " + songName + " by " + artist);
+                client.action(config.channel,"Current Song: " + songName + " by " + artist);
                 return;
             }
         });
@@ -257,10 +259,10 @@ client.on("chat", function (channel, user, message, self) {
 
     if (message.toLowerCase() == "!uptime") {
 
-        axios.get("https://api.twitch.tv/kraken/streams/theborgLIVE?client_id=" + botInfo.clientID).then((response) => {
+        axios.get("https://api.twitch.tv/kraken/streams/theborgLIVE?client_id=" + config.clientID).then((response) => {
             if (response.data.stream == null) {
                 console.log("Steam is offline");
-                client.action(botInfo.channel, botInfo.channel + " is not currently streaming!");
+                client.action(config.channel, config.channel + " is not currently streaming!");
                 return;
             }
 
@@ -284,37 +286,37 @@ client.on("chat", function (channel, user, message, self) {
 
             console.log('UPTIME: ' + hoursDifference + ' hours ' + minutesDifference + ' minutes ' + secondsDifference + ' seconds ');
 
-            client.action(botInfo.channel, botInfo.channel + " has been streaming for " + hoursDifference + ' hours ' + minutesDifference + ' minutes ' + secondsDifference + ' seconds!');
+            client.action(config.channel, config.channel + " has been streaming for " + hoursDifference + ' hours ' + minutesDifference + ' minutes ' + secondsDifference + ' seconds!');
         });
 
         return;
     }
 });
 
-client.on("hosting", function (channel, target, viewers) {
-    client.action(botInfo.channel, "Thank you, " + channel + " for hosting for " + viewers + " viewers!");
+client.on("hosting", function (channel: string, target: string, viewers: number) {
+    client.action(config.channel, "Thank you, " + channel + " for hosting for " + viewers + " viewers!");
     return;
 });
 
 client.on("subscription", function (channel, username, method, message, userstate) {
-    client.action(botInfo.channel, "Thank you, " + userstate['display-name'] + "for subscribing!");
+    client.action(config.channel, "Thank you, " + userstate['display-name'] + "for subscribing!");
     return;
 });
 
-client.on("follow", function (channel, username, method, message, userstate) {
-    client.action(botInfo.channel, "Thank you, " + userstate['display-name'] + "for following!");
-    return;
-});
+// client.on("followersonly", function (channel, username, method, message, userstate) {
+//     client.action(config.channel, "Thank you, " + userstate['display-name'] + "for following!");
+//     return;
+// });
 
 client.on("resub", function (channel, username, months, message, userstate, methods) {
-    client.action(botInfo.channel, userstate['display-name'] + "has resubscribed for " + months + "months!");
+    client.action(config.channel, userstate['display-name'] + "has resubscribed for " + months + "months!");
     return;
 });
 
 client.on("join", (channel, username, self) => {
     if(welcomeMessage == true)
     {
-        client.action(botInfo.channel, "Welcome to the channel " + username);
+        client.action(config.channel, "Welcome to the channel " + username);
     }else{
         console.log("Welcome message is set to false, therefore did not welcome: " + username);
     }
@@ -322,74 +324,73 @@ client.on("join", (channel, username, self) => {
 });
 
 //removes the element from the array
-function arrayRemove(arr, value) {
+function arrayRemove(arr: any[], value: string | undefined) {
 
     return arr.filter(function(ele){
         return ele != value;
     });
- 
 }
 
 //send a random message to the chat
 function randomCommand(){
     var random = Math.floor(Math.random() * 3) + 1; // returns a random integer from 1 to 10
     if(random == 1){ //follow
-        client.action(botInfo.channel, "Please be sure to follow the stream so you can be notified when I go live next! It really helps the channel grow and build a great community.");
+        client.action(config.channel, "Please be sure to follow the stream so you can be notified when I go live next! It really helps the channel grow and build a great community.");
     }else if(random == 2){ //discord
-        client.action(botInfo.channel, "If you want to join my Discord, here is the link! " + botInfo.discordLink);
+        client.action(config.channel, "If you want to join my Discord, here is the link! " + config.discordLink);
     }else if(random == 3){ //loot
-        client.action(botInfo.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae go to: https://loots.com/theborglive")
+        client.action(config.channel, "Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae go to: https://loots.com/theborglive")
     }
     return;
 }
 
 function runCommerical(){
-    client.say(botInfo.channel, "/commercial");
+    client.say(config.channel, "/commercial");
     return;
 }
 
 function loyaltyPoints(){
-    const url = botInfo.loyaltyPointURL;
+    const url = config.loyaltyPointURL;
     axios.get(url).then((response) => {
 
-        for(i = 0; i < response.data.chatters.broadcaster.length; i++)
+        for(let i = 0; i < response.data.chatters.broadcaster.length; i++)
         {
             currentViewers.push(response.data.chatters.broadcaster[i]);
         }
-        for(i = 0; i < response.data.chatters.moderators.length; i++)
+        for(let i = 0; i < response.data.chatters.moderators.length; i++)
         {
             currentViewers.push(response.data.chatters.moderators[i]);
         }
 
-        for(i = 0; i < response.data.chatters.vips.length; i++)
+        for(let i = 0; i < response.data.chatters.vips.length; i++)
         {
             currentViewers.push(response.data.chatters.vips[i]);
         }
-        
-        for(i = 0; i < response.data.chatters.staff.length; i++)
+
+        for(let i = 0; i < response.data.chatters.staff.length; i++)
         {
             currentViewers.push(response.data.chatters.staff[i]);
         }
 
-        for(i = 0; i < response.data.chatters.admins.length; i++)
+        for(let i = 0; i < response.data.chatters.admins.length; i++)
         {
             currentViewers.push(response.data.chatters.admins[i]);
         }
 
-        for(i = 0; i < response.data.chatters.global_mods.length; i++)
+        for(let i = 0; i < response.data.chatters.global_mods.length; i++)
         {
             currentViewers.push(response.data.chatters.global_mods[i]);
         }
 
-        for(i = 0; i < response.data.chatters.viewers.length; i++)
+        for(let i = 0; i < response.data.chatters.viewers.length; i++)
         {
             currentViewers.push(response.data.chatters.viewers[i]);
         }
 
         CSVToJSON().fromFile("./viewerLoyalPoints.csv").then(source => {
-            for(i = 0; i < currentViewers.length; i++)
+            for(let i = 0; i < currentViewers.length; i++)
             {
-                for(j = 0; j < source.length; j++){
+                for(let j = 0; j < source.length; j++){
                     if(source[j].viewer == currentViewers[i])
                     {
                         var points = parseInt(source[j].points)
@@ -407,8 +408,8 @@ function loyaltyPoints(){
                 }
             }
 
-            const csv = JSONToCSV(source, { fields: ["viewer", "points"] });
-            FileSystem.writeFileSync("./viewerLoyalPoints.csv", csv);
+            const csv = parse(source, { fields: ["viewer", "points"] });
+            fs.writeFileSync("./viewerLoyalPoints.csv", csv);
         })
     });
     console.log("Updated current loyalty points!")

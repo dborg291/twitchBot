@@ -1,0 +1,39 @@
+{
+  "name": "twitchbot",
+  "version": "1.0.0",
+  "description": "**What is it:** This is a chat bot that can connect to any Twitch channel's chat. The bot is able to send various messages based on certain key messages being sent.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node ./out/src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dborg291/twitchBot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dborg291/twitchBot/issues"
+  },
+  "homepage": "https://github.com/dborg291/twitchBot#readme",
+  "devDependencies": {
+    "@types/json2csv": "^4.5.0",
+    "@types/node": "^12.6.8",
+    "@types/request": "^2.48.2",
+    "@types/spotify-web-api-node": "^4.0.0",
+    "@types/tmi.js": "^1.4.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "source-map-loader": "^0.2.4",
+    "tmi.js": "^1.4.5",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "csvtojson": "^2.0.10",
+    "fs": "0.0.1-security",
+    "json2csv": "^4.5.2",
+    "request": "^2.88.0",
+    "spotify-web-api-node": "^4.0.0"
+  }
+}
