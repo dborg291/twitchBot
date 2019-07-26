@@ -10,6 +10,7 @@ import { Commands } from "./commands/Commands";
 
 // constants
 import constants from "../config/constants.json";
+import { Badge } from "./IChatCommand";
 const config: IConfiguration = constants;
 
 let spotifyApi = new SpotifyWebApi({
@@ -75,7 +76,9 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
     // Daniel look here!
     Commands.forEach(command => {
         if (message.toLowerCase() === command.key) {
-            command.action(client, config);
+            if (command.badge ===  Badge.any || user.badges && user.badges[command.badge]) {
+                command.action(client, config);
+            }
         }
     });
 
