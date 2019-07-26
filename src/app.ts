@@ -86,23 +86,7 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 	if (user["mod"] == true || channel.includes(user.username)) {
 		// console.log("Chat is from a mod");
 
-		if (message.toLowerCase().includes("!follow")) {
-			client.action(
-				config.channel,
-				"Please be sure to follow the stream so you can be notified when I go live next! It really helps the channel grow and build a great community."
-			);
-			return;
-		}
-
-		if (message.toLowerCase().includes("!twitchprime")) {
-			client.action(
-				config.channel,
-				"If you wish to give back to the stream and you have Amazon Prime, you can get one free Twitch Prime subscription a month. You can subscribe by clicking above the stream or by clicking https://www.twitch.tv/products/theborgLIVE/ticket/new"
-			);
-			return;
-		}
-
-		if (message.toLowerCase().includes("!permit")) {
+		if (message.toLowerCase().includes("!permit")) { 
 			//Allows chaters to send one link
 			var atIndex = message.indexOf(" "); //Mods/Streamer must @ the user they want to permit so its correct
 			var permitedUser = message.substring(atIndex + 1); //find the start of the user's name
@@ -226,29 +210,8 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 		return;
 	}
 
-	if (message.toLowerCase().includes("!discord")) {
-		client.action(config.channel, "If you want to join my Discord, here is the link! " + config.discordLink);
-		return;
-	}
-
 	if (message.toLowerCase().includes("good bot")) {
 		client.action(config.channel, "Thanks for the complement " + user["display-name"] + "!");
-		return;
-	}
-
-	if (message.toLowerCase().includes("!loot")) {
-		client.action(
-			config.channel,
-			"Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae go to: https://loots.com/theborglive"
-		);
-		return;
-	}
-
-	if (message.toLowerCase().includes("!commands")) {
-		client.action(
-			config.channel,
-			"!follow    !twitchprime    !discord    !loot    !uptime    !permit  !so    !poll    !closepoll    !answer    !leave    NOTE:  Some commands can only be used a mod or the streamer."
-		);
 		return;
 	}
 
