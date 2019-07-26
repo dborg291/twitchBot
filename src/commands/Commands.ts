@@ -8,7 +8,7 @@ const HelloCommand: IChatCommand = {
 	action: (client: Client, config: IConfiguration) => {
 		client.action(config.channel, "Hello!");
 	}
-}
+};
 
 const Commands: IChatCommand[] = [HelloCommand];
 
