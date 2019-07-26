@@ -6,6 +6,7 @@ import JSONToCSV, { parse } from "json2csv";
 import fs from "fs";
 import SpotifyWebApi from "spotify-web-api-node";
 import { IConfiguration } from "./IConfiguration";
+import { Commands } from "./commands/Commands";
 
 // constants
 import constants from "../config/constants.json";
@@ -70,6 +71,13 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
             return;
         }
     }
+
+    // Daniel look here!
+    Commands.forEach(command => {
+        if (message.toLowerCase() === command.key) {
+            command.action(client, config);
+        }
+    });
 
     //MOD ONLY COMMANDS
     if (user['mod'] == true || channel.includes(user.username)) {
