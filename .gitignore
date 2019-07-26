@@ -1,3 +1,8 @@
 botInfo.js
 node_modules/
 viewerLoyalPoints.csv
+/config/**/*
+/config
+config/
+*.js
+out/
