@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node ./out/src/app.js",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
