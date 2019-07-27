@@ -69,3 +69,9 @@
 
 * implement a command registry
 * implement command providers
+
+---
+
+## Contributors
+- Daniel Borg - [https://github.com/dborg291](https://github.com/dborg291)
+- Alex Weininger - [https://github.com/alexweininger](https://github.com/alexweininger)
