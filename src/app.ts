@@ -42,7 +42,7 @@ var pollEntries: number = 0.0;
 var pollAnswers: any[] = [];
 var currentViewers: any[] = [];
 var randomMessage: any;
-var welcomeMessage: boolean = true;
+var welcomeMessage: boolean = false;
 
 // Connect the client to the server..
 client.connect();
