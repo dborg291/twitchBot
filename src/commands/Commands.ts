@@ -1,15 +1,24 @@
-import { IChatCommand, Badge } from "../IChatCommand";
-import { Client } from "tmi.js";
+import { Badge, ICommand } from "../ICommand";
+import { Client, UserNoticeState } from "tmi.js";
+
 import { IConfiguration } from "../IConfiguration";
 
-const HelloCommand: IChatCommand = {
+const HelloCommand: ICommand = {
 	key: "!hello",
-	badge: Badge.broadcaster,
 	action: (client: Client, config: IConfiguration) => {
 		client.action(config.channel, "Hello!");
 	}
 };
 
-const Commands: IChatCommand[] = [HelloCommand];
+const Commands: ICommand[] = [HelloCommand];
 
-export { Commands };
+let commandList: Map<string, ICommand> = new Map();
+
+Commands.forEach(command => {
+	commandList.set(command.key, command);
+});
+
+const CommandList: Map<string, ICommand> = commandList;
+
+
+export { Commands, CommandList };
