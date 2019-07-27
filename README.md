@@ -32,20 +32,20 @@
     ~~~
     module.exports = {
         //Twitch API
-        username: 
-        password: 
-        clientID: 
-        channel: 
+        username:
+        password:
+        clientID:
+        channel:
 
         //Spotify API
-        spotifyClientID: 
-        spotifyClientSecret: 
-        spotifyOAuthToken: 
-        spotifyRedirectURI: 
-        spofityAPILink: 
+        spotifyClientID:
+        spotifyClientSecret:
+        spotifyOAuthToken:
+        spotifyRedirectURI:
+        spofityAPILink:
 
         //Discord
-        discordLink: 
+        discordLink:
     }
     ~~~
 6. Under Twitch API:
@@ -63,3 +63,9 @@
     * discordLink: permanent invite link
 9. `npm start`
 
+---
+
+## Todo
+
+* implement a command registry
+* implement command providers
