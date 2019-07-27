@@ -1,27 +1,25 @@
-import { IChatCommand, Badge } from "../IChatCommand";
-import { Client } from "tmi.js";
+import { Badge, ICommand } from "../ICommand";
+import { Client, UserNoticeState } from "tmi.js";
+
 import { IConfiguration } from "../IConfiguration";
 import { userInfo } from "os";
 
-const HelloCommand: IChatCommand = {
+const HelloCommand: ICommand = {
 	key: "!hello",
-	badge: Badge.broadcaster,
 	action: (client: Client, config: IConfiguration) => {
 		client.action(config.channel, "Hello!");
 	}
 };
 
-const DiscordCommand: IChatCommand = {
+const DiscordCommand: ICommand = {
 	key: "!discord",
-	badge: Badge.broadcaster,
 	action: (client: Client, config: IConfiguration) => {
 		client.action(config.channel, "If you want to join my Discord, here is the link! " + config.discordLink);
 	}
 }
 
-const LootsCommand: IChatCommand = {
+const LootsCommand: ICommand = {
 	key: "!loots",
-	badge: Badge.broadcaster,
 	action: (client: Client, config: IConfiguration) => {
 		client.action(
 			config.channel,
@@ -30,9 +28,8 @@ const LootsCommand: IChatCommand = {
 	}
 }
 
-const CommandsCommand: IChatCommand = {
+const CommandsCommand: ICommand = {
 	key: "!commands",
-	badge: Badge.broadcaster,
 	action: (client: Client, config: IConfiguration) => {
 		client.action(
 			config.channel,
@@ -41,9 +38,8 @@ const CommandsCommand: IChatCommand = {
 	}
 }
 
-const FollowCommand: IChatCommand = {
+const FollowCommand: ICommand = {
 	key: "!follow",
-	badge: Badge.broadcaster,
 	action: (client: Client, config: IConfiguration) => {
 		client.action(
 			config.channel,
@@ -52,9 +48,8 @@ const FollowCommand: IChatCommand = {
 	}
 }
 
-const TwitchPrimeCommand: IChatCommand = {
+const TwitchPrimeCommand: ICommand = {
 	key: "!twitchprime",
-	badge: Badge.broadcaster,
 	action: (client: Client, config: IConfiguration) => {
 		client.action(
 			config.channel,
@@ -63,6 +58,15 @@ const TwitchPrimeCommand: IChatCommand = {
 	}
 }
 
-const Commands: IChatCommand[] = [HelloCommand, DiscordCommand, LootsCommand, CommandsCommand, FollowCommand, TwitchPrimeCommand];
+const Commands: ICommand[] = [HelloCommand, DiscordCommand, LootsCommand, CommandsCommand, FollowCommand, TwitchPrimeCommand];
 
-export { Commands };
+let commandList: Map<string, ICommand> = new Map();
+
+Commands.forEach(command => {
+	commandList.set(command.key, command);
+});
+
+const CommandList: Map<string, ICommand> = commandList;
+
+
+export { Commands, CommandList };

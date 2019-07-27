@@ -1,14 +1,14 @@
-import tmi, { Client } from "tmi.js";
+import { Client, UserNoticeState } from "tmi.js";
 import { IConfiguration } from "./IConfiguration";
 
-export interface IChatCommand {
+export interface ICommand {
 	key: string;
 	action: ActionFunction;
-	badge: Badge;
+	badges?: Badge[];
 }
 
 interface ActionFunction {
-	(client: Client, config: IConfiguration): void;
+	(client: Client, config: IConfiguration, channel?: string, user?: UserNoticeState, message?: string, self?: boolean): void;
 }
 
 export enum Badge {
@@ -19,6 +19,5 @@ export enum Badge {
 	moderator = "moderator",
 	subscriber = "subscriber",
 	staff = "staff",
-	turbo = "turbo",
-	any = "any"
+	turbo = "turbo"
 }

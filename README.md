@@ -25,40 +25,47 @@
 **Installation/Setup:**
 
 1. Clone Repo
-2. `npm install`
-3. Create a new file called "botInfo.js" within the same directory as app.js
-4. Paste this code snippet into botInfo.js:
+2. `npm install -g typescript`
+3. `npm install` (`npm start` to run)
+4. Create a new file called "botInfo.js" within the same directory as app.js
+5. Paste this code snippet into botInfo.js:
     ~~~
     module.exports = {
         //Twitch API
-        username: 
-        password: 
-        clientID: 
-        channel: 
+        username:
+        password:
+        clientID:
+        channel:
 
         //Spotify API
-        spotifyClientID: 
-        spotifyClientSecret: 
-        spotifyOAuthToken: 
-        spotifyRedirectURI: 
-        spofityAPILink: 
+        spotifyClientID:
+        spotifyClientSecret:
+        spotifyOAuthToken:
+        spotifyRedirectURI:
+        spofityAPILink:
 
         //Discord
-        discordLink: 
+        discordLink:
     }
     ~~~
-5. Under Twitch API:
+6. Under Twitch API:
     * username: Bot's Twitch username
     * password: Bots' Twitch OAUTH code, go here for the token: https://twitchapps.com/tmi/
     * clientID: Bot's clientID, go here for setup: https://dev.twitch.tv/
     * channel: The name of the twitch channel you want the bot to connect to.
-6. Under Spotify API:
+7. Under Spotify API:
     * spotifyClientID:  Bot's clientID, go here for setup: https://developer.spotify.com/
     * spotifyClientSecret: Bot's client secret, go here for setup: https://developer.spotify.com/
     * spotifyOAuthToken: Bot's Spotify OAUTH code, go here for setup: https://developer.spotify.com/
     * spotifyRedirectURI: Bot's redirect URI, go here for setup: https://developer.spotify.com/
     * spoiftyAPILink: Connect Groke to your Spotify account, go here for setup: https://www.groke.se/twitch/spotify
-7. Under Discord:
+8. Under Discord:
     * discordLink: permanent invite link
-8. `node ./app.js`
+9. `npm start`
 
+---
+
+## Todo
+
+* implement a command registry
+* implement command providers

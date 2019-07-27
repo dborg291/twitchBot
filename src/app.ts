@@ -1,16 +1,16 @@
-import tmi, { UserNoticeState, Client, Options } from "tmi.js";
-import axios from "axios";
-import request from "request";
+import tmi, { Client, Options, UserNoticeState } from "tmi.js";
+import { Badge, ICommand } from "./ICommand";
 import CSVToJSON from "csvtojson";
-import JSONToCSV, { parse } from "json2csv";
-import fs from "fs";
-import SpotifyWebApi from "spotify-web-api-node";
+import { Commands, CommandList } from "./commands/Commands";
 import { IConfiguration } from "./IConfiguration";
-import { Commands } from "./commands/Commands";
-
-// constants
+import SpotifyWebApi from "spotify-web-api-node";
+import axios from "axios";
 import constants from "../config/constants.json";
-import { Badge } from "./IChatCommand";
+import fs from "fs";
+import { parse } from "json2csv";
+import request from "request";
+import { CommandHelpers } from "./CommandHelpers";
+
 const config: IConfiguration = constants;
 
 let spotifyApi = new SpotifyWebApi({
@@ -73,14 +73,18 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 		}
 	}
 
-	// Daniel look here!
-	Commands.forEach(command => {
-		if (message.toLowerCase() === command.key) {
-			if (command.badge === Badge.any || (user.badges && user.badges[command.badge])) {
-				command.action(client, config);
+	if (message.startsWith("!")) {
+		let commandText: string = message.split(" ")[0];
+
+		let command: ICommand | undefined = CommandList.get(commandText);
+		if (command) {
+			if (CommandHelpers.IsCommandAvailableToUser(command.badges, user.badges)) {
+				command.action(client, config, channel, user, message, self);
 			}
+		} else {
+			// command not found
 		}
-	});
+	}
 
 	//MOD ONLY COMMANDS
 	if (user["mod"] == true || channel.includes(user.username)) {
