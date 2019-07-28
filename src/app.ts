@@ -42,6 +42,7 @@ var currentViewers: any[] = [];
 var randomMessage: any;
 var welcomeMessage: boolean = false;
 var loyaltyPointsJson: any;
+var loyaltyPointsCounter: any;
 
 
 // Connect the client to the server..
@@ -50,6 +51,7 @@ client.on("connected", (address: string, port: number) => {
 	client.action(config.channel, "Hello Chat! I'm here and moderating over you!");
 	randomMessage = setInterval(randomCommand, 1800000); //call the randomCommand function every 30 min
 	// playCommerial = setInterval(runCommerical, 1800000); //runs a commerical every 30 min
+	// loyaltyPointsCounter = setInterval(loyaltyPoints, 10000);
 	loyaltyPoints();
 });
 
@@ -170,6 +172,31 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 			welcomeMessage = !welcomeMessage;
 			client.action(config.channel, "Welcome message is now set to: " + welcomeMessage);
 		}
+
+		if(message.toLowerCase().includes("!addpoints"))
+		{
+			var name = message.substring(message.toLowerCase().indexOf("@")+1, message.toLowerCase().lastIndexOf(" ")).toLowerCase(); //find the name of the user to add points to
+			var ammount = parseInt(message.substring(message.lastIndexOf(" ")+1)) //find the ammount in which to add
+			
+			var data = fs.readFileSync("./config/loyaltypoints.json",'utf8'); //read the file
+			loyaltyPointsJson = JSON.parse(data); //parse the data
+
+			for(var j = 0; j < loyaltyPointsJson.length; j++){ //run though all names on the list
+				if(loyaltyPointsJson[j].id === name){ //when a name is found
+					var currentPoints = loyaltyPointsJson[j].points; //get current points
+					loyaltyPointsJson[j].points = currentPoints + ammount; //add the ammount to the user
+					break;
+				}else if(j === (loyaltyPointsJson.length-1)){ //if the user doesnt exsits, add them
+					loyaltyPointsJson.push({
+						"id":name,
+						"points":ammount,
+					});
+				}
+			}
+			fs.writeFileSync('./config/loyaltypoints.json', JSON.stringify(loyaltyPointsJson)) //write the the file
+		}
+
+		return;
 	}
 
 	//NON-MOD COMMANDS
@@ -374,7 +401,7 @@ function runCommerical() {
 
 function loyaltyPoints() {
 	const url = config.loyaltyPointURL;
-	axios.get(url).then(response => {
+	axios.get(url).then(response => { //get the json from the url and add all the users to list called current viewers
 		for (let i = 0; i < response.data.chatters.broadcaster.length; i++) {
 			currentViewers.push(response.data.chatters.broadcaster[i]);
 		}
@@ -402,31 +429,34 @@ function loyaltyPoints() {
 			currentViewers.push(response.data.chatters.viewers[i]);
 		}
 
-		fs.stat("./config/loyaltypoints.json", (exists) => {
-        	if (exists == null) {
+
+		fs.stat("./config/loyaltypoints.json", (exists) => { //check if the loyalty polints file exists
+        	if (exists == null) { //if so, read and parse it
 				var data = fs.readFileSync("./config/loyaltypoints.json",'utf8');
 				loyaltyPointsJson = JSON.parse(data);
-            } else if (exists.code === 'ENOENT') {
+            } else if (exists.code === 'ENOENT') { //if not, create it with dedult text, then read and parse it
 				fs.writeFileSync('./config/loyaltypoints.json','[{"id":"theborglive","points":1},{"id":"theborglivebot","points":1}]');
 				var data = fs.readFileSync("./config/loyaltypoints.json",'utf8');
 				loyaltyPointsJson = JSON.parse(data);
 			}
 			
-			for(var i = 0; i < currentViewers.length; i++)
+			for(var i = 0; i < currentViewers.length; i++) //run though all currentViewers
 			{
-				if(loyaltyPointsJson[i].id === currentViewers[i]){
-					var currentPoints = loyaltyPointsJson[i].points;
-					loyaltyPointsJson[i].points = currentPoints + 1;
-				}else{
-					loyaltyPointsJson.push({
-						"id":currentViewers[i],
-						"points":1,
-					});
+				for(var j = 0; j < loyaltyPointsJson.length; j++){ //run through all viewers on the json file
+					if(loyaltyPointsJson[j].id === currentViewers[i]){ //if the names match add a point
+						var currentPoints = loyaltyPointsJson[j].points;
+						loyaltyPointsJson[j].points = currentPoints + 1;
+						break;
+					}else if(j === (loyaltyPointsJson.length-1)){ //if reached the end of he json file and rhe name is not found, then add them
+						loyaltyPointsJson.push({
+							"id":currentViewers[i],
+							"points":1,
+						});
+					}
 				}
 			}
-			fs.writeFileSync('./config/loyaltypoints.json', JSON.stringify(loyaltyPointsJson))	
+			fs.writeFileSync('./config/loyaltypoints.json', JSON.stringify(loyaltyPointsJson)) //write the file
 		});
 	});
-	console.log("Updated current loyalty points!");
 	return;
 }
