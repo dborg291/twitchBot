@@ -407,7 +407,7 @@ function loyaltyPoints() {
 				var data = fs.readFileSync("./config/loyaltypoints.json",'utf8');
 				loyaltyPointsJson = JSON.parse(data);
             } else if (exists.code === 'ENOENT') {
-				fs.writeFileSync('./config/loyaltypoints.json','{[{"id":"theborglive","points":1},{"id":"theborglivebot","points":1}]}');
+				fs.writeFileSync('./config/loyaltypoints.json','[{"id":"theborglive","points":1},{"id":"theborglivebot","points":1}]');
 				var data = fs.readFileSync("./config/loyaltypoints.json",'utf8');
 				loyaltyPointsJson = JSON.parse(data);
 			}
