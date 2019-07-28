@@ -26,26 +26,22 @@
 
 1. Clone Repo
 2. `npm install -g typescript`
-3. `npm install` (`npm start` to run)
-4. Create a new file called "botInfo.js" within the same directory as app.js
-5. Paste this code snippet into botInfo.js:
+3. `npm install`
+4. Create a new folder called "config" in the root directory and a file called "constants.json" within config
+5. Paste this code snippet into constants.json:
     ~~~
-    module.exports = {
-        //Twitch API
-        username:
-        password:
-        clientID:
-        channel:
-
-        //Spotify API
-        spotifyClientID:
-        spotifyClientSecret:
-        spotifyOAuthToken:
-        spotifyRedirectURI:
-        spofityAPILink:
-
-        //Discord
-        discordLink:
+   {
+    "username":
+    "password":
+    "clientID":
+    "channel":
+    "spotifyClientID":
+    "spotifyClientSecret":
+    "spotifyOAuthToken":
+    "spotifyRedirectURI":
+    "spoiftyAPILink":
+    "discordLink":
+    "loyaltyPointURL":
     }
     ~~~
 6. Under Twitch API:
@@ -61,7 +57,8 @@
     * spoiftyAPILink: Connect Groke to your Spotify account, go here for setup: https://www.groke.se/twitch/spotify
 8. Under Discord:
     * discordLink: permanent invite link
-9. `npm start`
+9. `tsc`
+10. `npm start`
 
 ---
 
