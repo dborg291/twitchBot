@@ -49,10 +49,10 @@ var loyaltyPointsCounter: any;
 client.connect();
 client.on("connected", (address: string, port: number) => {
 	client.action(config.channel, "Hello Chat! I'm here and moderating over you!");
+	loyaltyPoints();
 	randomMessage = setInterval(randomCommand, 1800000); //call the randomCommand function every 30 min
 	// playCommerial = setInterval(runCommerical, 1800000); //runs a commerical every 30 min
-	// loyaltyPointsCounter = setInterval(loyaltyPoints, 10000);
-	loyaltyPoints();
+	loyaltyPointsCounter = setInterval(loyaltyPoints, 300000);
 });
 
 client.on("chat", (channel: string, user: UserNoticeState, message: string, self: boolean) => {
