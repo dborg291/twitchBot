@@ -189,7 +189,7 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 				}else if(j === (loyaltyPointsJson.length-1)){ //if the user doesnt exsits, add them
 					loyaltyPointsJson.push({
 						"id":name,
-						"points":ammount,
+						"points":0,
 					});
 				}
 			}
