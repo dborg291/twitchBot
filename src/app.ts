@@ -1,13 +1,11 @@
 import tmi, { Client, Options, UserNoticeState } from "tmi.js";
 import { Badge, ICommand } from "./ICommand";
-import CSVToJSON from "csvtojson";
 import { Commands, CommandList } from "./commands/Commands";
 import { IConfiguration } from "./IConfiguration";
 import SpotifyWebApi from "spotify-web-api-node";
 import axios from "axios";
 import constants from "../config/constants.json";
 import fs from "fs";
-import { parse } from "json2csv";
 import request from "request";
 import { CommandHelpers } from "./CommandHelpers";
 
@@ -43,6 +41,8 @@ var pollAnswers: any[] = [];
 var currentViewers: any[] = [];
 var randomMessage: any;
 var welcomeMessage: boolean = false;
+var loyaltyPointsJson: any;
+
 
 // Connect the client to the server..
 client.connect();
@@ -402,30 +402,30 @@ function loyaltyPoints() {
 			currentViewers.push(response.data.chatters.viewers[i]);
 		}
 
-		CSVToJSON()
-			.fromFile("./viewerLoyalPoints.csv")
-			.then(source => {
-				for (let i = 0; i < currentViewers.length; i++) {
-					for (let j = 0; j < source.length; j++) {
-						if (source[j].viewer == currentViewers[i]) {
-							var points = parseInt(source[j].points);
-							points = points + 1;
-							source[j].points = points;
-							break;
-						} else {
-							if (j == source.length - 1) {
-								source.push({
-									viewer: currentViewers[i],
-									points: "1"
-								});
-							}
-						}
-					}
+		fs.stat("./config/loyaltypoints.json", (exists) => {
+        	if (exists == null) {
+				var data = fs.readFileSync("./config/loyaltypoints.json",'utf8');
+				loyaltyPointsJson = JSON.parse(data);
+            } else if (exists.code === 'ENOENT') {
+				fs.writeFileSync('./config/loyaltypoints.json','{[{"id":"theborglive","points":1},{"id":"theborglivebot","points":1}]}');
+				var data = fs.readFileSync("./config/loyaltypoints.json",'utf8');
+				loyaltyPointsJson = JSON.parse(data);
+			}
+			
+			for(var i = 0; i < currentViewers.length; i++)
+			{
+				if(loyaltyPointsJson[i].id === currentViewers[i]){
+					var currentPoints = loyaltyPointsJson[i].points;
+					loyaltyPointsJson[i].points = currentPoints + 1;
+				}else{
+					loyaltyPointsJson.push({
+						"id":currentViewers[i],
+						"points":1,
+					});
 				}
-
-				const csv = parse(source, { fields: ["viewer", "points"] });
-				fs.writeFileSync("./viewerLoyalPoints.csv", csv);
-			});
+			}
+			fs.writeFileSync('./config/loyaltypoints.json', JSON.stringify(loyaltyPointsJson))	
+		});
 	});
 	console.log("Updated current loyalty points!");
 	return;
