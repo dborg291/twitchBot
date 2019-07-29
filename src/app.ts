@@ -209,11 +209,16 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 
 		if(message.toLowerCase().includes("!closegiveaway"))
 		{
-			onGoingGiveaway = false;
-			var random = Math.floor(Math.random() * givewayEntries.length);
-			var winner = givewayEntries[random];
-			client.action(config.channel, "Congrats to @" + winner + " for winning the givweway. Please whisper me to claim your prize!");
-			givewayEntries = [];
+			if(givewayEntries.length > 0)
+			{
+				onGoingGiveaway = false;
+				var random = Math.floor(Math.random() * givewayEntries.length);
+				var winner = givewayEntries[random];
+				client.action(config.channel, "Congrats to @" + winner + " for winning the givweway. Please whisper me to claim your prize!");
+				givewayEntries = [];
+			}else{
+				onGoingGiveaway = false;
+			}
 		}
 	}
 
