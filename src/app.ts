@@ -43,6 +43,8 @@ var randomMessage: any;
 var welcomeMessage: boolean = false;
 var loyaltyPointsJson: any;
 var loyaltyPointsCounter: any;
+var onGoingGiveaway : boolean = false;
+var givewayEntries : any[] = [];
 
 
 // Connect the client to the server..
@@ -105,7 +107,7 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 		if (message.toLowerCase().includes("!so")) {
 			var atIndex = message.indexOf("@");
 			var shoutoutUser = message.substring(atIndex + 1);
-			client.action(config.channel, "Everyone give " + shoutoutUser + " a follow at http://www.Twitch.tv/" + shoutoutUser + " They are a beast!");
+			client.action(config.channel, "Everyone give @" + shoutoutUser + " a follow at http://www.Twitch.tv/" + shoutoutUser + " They are a beast!");
 			return;
 		}
 
@@ -196,6 +198,22 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 			}
 			fs.writeFileSync('./config/loyaltypoints.json', JSON.stringify(loyaltyPointsJson)) //write the the file
 			return;
+		}
+
+		if(message.toLowerCase().includes("!startgiveaway"))
+		{
+			onGoingGiveaway = true;
+			client.action(config.channel, "A giveaway has been started, type !giveaway to enter. Only on entry per view and the winner is picked randomly.");
+			return;
+		}
+
+		if(message.toLowerCase().includes("!closegiveaway"))
+		{
+			onGoingGiveaway = false;
+			var random = Math.floor(Math.random() * givewayEntries.length);
+			var winner = givewayEntries[random];
+			client.action(config.channel, "Congrats to @" + winner + " for winning the givweway. Please whisper me to claim your prize!");
+			givewayEntries = [];
 		}
 	}
 
@@ -333,6 +351,19 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 		});
 
 		return;
+	}
+
+	if(message.toLowerCase().includes("!giveaway"))
+	{
+		if(onGoingGiveaway == true)
+		{
+			if(!(givewayEntries.includes(user["display-name"])))
+			{
+				givewayEntries.push(user["display-name"])
+			}else{
+				client.say(config.channel, "/w " + user["username"] + " You are already entered into the giveaway");
+			}
+		}
 	}
 });
 
