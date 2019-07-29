@@ -458,5 +458,7 @@ function loyaltyPoints() {
 			fs.writeFileSync('./config/loyaltypoints.json', JSON.stringify(loyaltyPointsJson)) //write the file
 		});
 	});
+
+	currentViewers = [];
 	return;
 }
