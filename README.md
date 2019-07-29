@@ -18,6 +18,9 @@
     - !closepoll - closes the currently active poll, sends a message saying; poll is closed, the number of votes from chat, and the vote distribution percentage (Mods and Streamer)
     - !answer [Option Number] - collects the poll vote from the user (Everyone)
     - !addpoints @[TwitchUserName] [Amount of Points] - added entered in amount of points to the selected user (Mods and Streamer)
+    - !startgiveaway - opens a giveaway that views can enter (Mods and Streamer)
+    - !giveaway - adds the message sender to the giveaway, sender can only be entered once into a giveaway (Everyone)
+    - !closegiveaway - closes the current giveaway and randomly selects a winner (Mods and Streamer)
 - Notify chat when a viewer has; subscribed, re-subscribed, or started hosting the channel
 - Automatically time-out viewers (who are not mods or the streamer) for sending a link, without already having been permitted to send one
 - Send a promotional message, such as !follow, !twitchprime, !discord, or !loot, at random every 30 minutes
