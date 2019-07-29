@@ -40,10 +40,6 @@
     "password":
     "clientID":
     "channel":
-    "spotifyClientID":
-    "spotifyClientSecret":
-    "spotifyOAuthToken":
-    "spotifyRedirectURI":
     "spoiftyAPILink":
     "discordLink":
     "loyaltyPointURL":
@@ -55,10 +51,6 @@
     * clientID: Bot's clientID, go here for setup: https://dev.twitch.tv/
     * channel: The name of the twitch channel you want the bot to connect to.
 7. Under Spotify API:
-    * spotifyClientID:  Bot's clientID, go here for setup: https://developer.spotify.com/
-    * spotifyClientSecret: Bot's client secret, go here for setup: https://developer.spotify.com/
-    * spotifyOAuthToken: Bot's Spotify OAUTH code, go here for setup: https://developer.spotify.com/
-    * spotifyRedirectURI: Bot's redirect URI, go here for setup: https://developer.spotify.com/
     * spoiftyAPILink: Connect Groke to your Spotify account, go here for setup: https://www.groke.se/twitch/spotify
 8. Under Discord:
     * discordLink: permanent invite link

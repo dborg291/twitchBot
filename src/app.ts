@@ -2,7 +2,7 @@ import tmi, { Client, Options, UserNoticeState } from "tmi.js";
 import { Badge, ICommand } from "./ICommand";
 import { Commands, CommandList } from "./commands/Commands";
 import { IConfiguration } from "./IConfiguration";
-import SpotifyWebApi from "spotify-web-api-node";
+// import SpotifyWebApi from "spotify-web-api-node";
 import axios from "axios";
 import constants from "../config/constants.json";
 import fs from "fs";
@@ -10,12 +10,6 @@ import request from "request";
 import { CommandHelpers } from "./CommandHelpers";
 
 const config: IConfiguration = constants;
-
-let spotifyApi = new SpotifyWebApi({
-	clientId: config.spotifyClientID,
-	clientSecret: config.spotifyClientSecret,
-	redirectUri: config.spotifyRedirectURI
-});
 
 const options: Options = {
 	options: {
