@@ -171,6 +171,7 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 		if (message.toLowerCase().includes("!togglewelcome")) {
 			welcomeMessage = !welcomeMessage;
 			client.action(config.channel, "Welcome message is now set to: " + welcomeMessage);
+			return;
 		}
 
 		if(message.toLowerCase().includes("!addpoints"))
@@ -194,9 +195,8 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 				}
 			}
 			fs.writeFileSync('./config/loyaltypoints.json', JSON.stringify(loyaltyPointsJson)) //write the the file
+			return;
 		}
-
-		return;
 	}
 
 	//NON-MOD COMMANDS
