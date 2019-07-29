@@ -25,7 +25,7 @@
 - Automatically time-out viewers (who are not mods or the streamer) for sending a link, without already having been permitted to send one
 - Send a promotional message, such as !follow, !twitchprime, !discord, or !loot, at random every 30 minutes
 - Automatically run a 30 second commercial every 30 minutes
-- Loyalty Points system that add 1 point to every person in the chat every 5 mintues
+- Loyalty Points system that add 1 point to every person in the chat every 5 minutes
 
 **Installation/Setup:**
 
