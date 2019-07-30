@@ -2,7 +2,6 @@ import { Badge, ICommand } from "../ICommand";
 import { Client, UserNoticeState } from "tmi.js";
 
 import { IConfiguration } from "../IConfiguration";
-import { userInfo } from "os";
 
 const HelloCommand: ICommand = {
 	key: "!hello",
