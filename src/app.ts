@@ -1,23 +1,15 @@
 import tmi, { Client, Options, UserNoticeState } from "tmi.js";
 import { Badge, ICommand } from "./ICommand";
-import CSVToJSON from "csvtojson";
 import { Commands, CommandList } from "./commands/Commands";
 import { IConfiguration } from "./IConfiguration";
-import SpotifyWebApi from "spotify-web-api-node";
+// import SpotifyWebApi from "spotify-web-api-node";
 import axios from "axios";
 import constants from "../config/constants.json";
 import fs from "fs";
-import { parse } from "json2csv";
 import request from "request";
 import { CommandHelpers } from "./CommandHelpers";
 
 const config: IConfiguration = constants;
-
-let spotifyApi = new SpotifyWebApi({
-	clientId: config.spotifyClientID,
-	clientSecret: config.spotifyClientSecret,
-	redirectUri: config.spotifyRedirectURI
-});
 
 const options: Options = {
 	options: {
@@ -42,15 +34,21 @@ var pollEntries: number = 0.0;
 var pollAnswers: any[] = [];
 var currentViewers: any[] = [];
 var randomMessage: any;
-var welcomeMessage: boolean = true;
+var welcomeMessage: boolean = false;
+var loyaltyPointsJson: any;
+var loyaltyPointsCounter: any;
+var onGoingGiveaway : boolean = false;
+var givewayEntries : any[] = [];
+
 
 // Connect the client to the server..
 client.connect();
 client.on("connected", (address: string, port: number) => {
 	client.action(config.channel, "Hello Chat! I'm here and moderating over you!");
+	loyaltyPoints();
 	randomMessage = setInterval(randomCommand, 1800000); //call the randomCommand function every 30 min
 	// playCommerial = setInterval(runCommerical, 1800000); //runs a commerical every 30 min
-	loyaltyPoints();
+	loyaltyPointsCounter = setInterval(loyaltyPoints, 300000);
 });
 
 client.on("chat", (channel: string, user: UserNoticeState, message: string, self: boolean) => {
@@ -90,23 +88,7 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 	if (user["mod"] == true || channel.includes(user.username)) {
 		// console.log("Chat is from a mod");
 
-		if (message.toLowerCase().includes("!follow")) {
-			client.action(
-				config.channel,
-				"Please be sure to follow the stream so you can be notified when I go live next! It really helps the channel grow and build a great community."
-			);
-			return;
-		}
-
-		if (message.toLowerCase().includes("!twitchprime")) {
-			client.action(
-				config.channel,
-				"If you wish to give back to the stream and you have Amazon Prime, you can get one free Twitch Prime subscription a month. You can subscribe by clicking above the stream or by clicking https://www.twitch.tv/products/theborgLIVE/ticket/new"
-			);
-			return;
-		}
-
-		if (message.toLowerCase().includes("!permit")) {
+		if (message.toLowerCase().includes("!permit")) { 
 			//Allows chaters to send one link
 			var atIndex = message.indexOf(" "); //Mods/Streamer must @ the user they want to permit so its correct
 			var permitedUser = message.substring(atIndex + 1); //find the start of the user's name
@@ -119,7 +101,7 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 		if (message.toLowerCase().includes("!so")) {
 			var atIndex = message.indexOf("@");
 			var shoutoutUser = message.substring(atIndex + 1);
-			client.action(config.channel, "Everyone give " + shoutoutUser + " a follow at http://www.Twitch.tv/" + shoutoutUser + " They are a beast!");
+			client.action(config.channel, "Everyone give @" + shoutoutUser + " a follow at http://www.Twitch.tv/" + shoutoutUser + " They are a beast!");
 			return;
 		}
 
@@ -185,6 +167,52 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 		if (message.toLowerCase().includes("!togglewelcome")) {
 			welcomeMessage = !welcomeMessage;
 			client.action(config.channel, "Welcome message is now set to: " + welcomeMessage);
+			return;
+		}
+
+		if(message.toLowerCase().includes("!addpoints"))
+		{
+			var name = message.substring(message.toLowerCase().indexOf("@")+1, message.toLowerCase().lastIndexOf(" ")).toLowerCase(); //find the name of the user to add points to
+			var ammount = parseInt(message.substring(message.lastIndexOf(" ")+1)) //find the ammount in which to add
+			
+			var data = fs.readFileSync("./config/loyaltypoints.json",'utf8'); //read the file
+			loyaltyPointsJson = JSON.parse(data); //parse the data
+
+			for(var j = 0; j < loyaltyPointsJson.length; j++){ //run though all names on the list
+				if(loyaltyPointsJson[j].id === name){ //when a name is found
+					var currentPoints = loyaltyPointsJson[j].points; //get current points
+					loyaltyPointsJson[j].points = currentPoints + ammount; //add the ammount to the user
+					break;
+				}else if(j === (loyaltyPointsJson.length-1)){ //if the user doesnt exsits, add them
+					loyaltyPointsJson.push({
+						"id":name,
+						"points":0,
+					});
+				}
+			}
+			fs.writeFileSync('./config/loyaltypoints.json', JSON.stringify(loyaltyPointsJson)) //write the the file
+			return;
+		}
+
+		if(message.toLowerCase().includes("!startgiveaway"))
+		{
+			onGoingGiveaway = true;
+			client.action(config.channel, "A giveaway has been started, type !giveaway to enter. Only on entry per view and the winner is picked randomly.");
+			return;
+		}
+
+		if(message.toLowerCase().includes("!closegiveaway"))
+		{
+			if(givewayEntries.length > 0)
+			{
+				onGoingGiveaway = false;
+				var random = Math.floor(Math.random() * givewayEntries.length);
+				var winner = givewayEntries[random];
+				client.action(config.channel, "Congrats to @" + winner + " for winning the givweway. Please whisper me to claim your prize!");
+				givewayEntries = [];
+			}else{
+				onGoingGiveaway = false;
+			}
 		}
 	}
 
@@ -230,29 +258,8 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 		return;
 	}
 
-	if (message.toLowerCase().includes("!discord")) {
-		client.action(config.channel, "If you want to join my Discord, here is the link! " + config.discordLink);
-		return;
-	}
-
 	if (message.toLowerCase().includes("good bot")) {
 		client.action(config.channel, "Thanks for the complement " + user["display-name"] + "!");
-		return;
-	}
-
-	if (message.toLowerCase().includes("!loot")) {
-		client.action(
-			config.channel,
-			"Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae go to: https://loots.com/theborglive"
-		);
-		return;
-	}
-
-	if (message.toLowerCase().includes("!commands")) {
-		client.action(
-			config.channel,
-			"!follow    !twitchprime    !discord    !loot    !uptime    !permit  !so    !poll    !closepoll    !answer    !leave    NOTE:  Some commands can only be used a mod or the streamer."
-		);
 		return;
 	}
 
@@ -344,6 +351,19 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 
 		return;
 	}
+
+	if(message.toLowerCase().includes("!giveaway"))
+	{
+		if(onGoingGiveaway == true)
+		{
+			if(!(givewayEntries.includes(user["display-name"])))
+			{
+				givewayEntries.push(user["display-name"])
+			}else{
+				client.say(config.channel, "/w " + user["username"] + " You are already entered into the giveaway");
+			}
+		}
+	}
 });
 
 client.on("hosting", function(channel: string, target: string, viewers: number) {
@@ -411,7 +431,7 @@ function runCommerical() {
 
 function loyaltyPoints() {
 	const url = config.loyaltyPointURL;
-	axios.get(url).then(response => {
+	axios.get(url).then(response => { //get the json from the url and add all the users to list called current viewers
 		for (let i = 0; i < response.data.chatters.broadcaster.length; i++) {
 			currentViewers.push(response.data.chatters.broadcaster[i]);
 		}
@@ -439,31 +459,36 @@ function loyaltyPoints() {
 			currentViewers.push(response.data.chatters.viewers[i]);
 		}
 
-		CSVToJSON()
-			.fromFile("./viewerLoyalPoints.csv")
-			.then(source => {
-				for (let i = 0; i < currentViewers.length; i++) {
-					for (let j = 0; j < source.length; j++) {
-						if (source[j].viewer == currentViewers[i]) {
-							var points = parseInt(source[j].points);
-							points = points + 1;
-							source[j].points = points;
-							break;
-						} else {
-							if (j == source.length - 1) {
-								source.push({
-									viewer: currentViewers[i],
-									points: "1"
-								});
-							}
-						}
+
+		fs.stat("./config/loyaltypoints.json", (exists) => { //check if the loyalty polints file exists
+        	if (exists == null) { //if so, read and parse it
+				var data = fs.readFileSync("./config/loyaltypoints.json",'utf8');
+				loyaltyPointsJson = JSON.parse(data);
+            } else if (exists.code === 'ENOENT') { //if not, create it with dedult text, then read and parse it
+				fs.writeFileSync('./config/loyaltypoints.json','[{"id":"theborglive","points":1},{"id":"theborglivebot","points":1}]');
+				var data = fs.readFileSync("./config/loyaltypoints.json",'utf8');
+				loyaltyPointsJson = JSON.parse(data);
+			}
+			
+			for(var i = 0; i < currentViewers.length; i++) //run though all currentViewers
+			{
+				for(var j = 0; j < loyaltyPointsJson.length; j++){ //run through all viewers on the json file
+					if(loyaltyPointsJson[j].id === currentViewers[i]){ //if the names match add a point
+						var currentPoints = loyaltyPointsJson[j].points;
+						loyaltyPointsJson[j].points = currentPoints + 1;
+						break;
+					}else if(j === (loyaltyPointsJson.length-1)){ //if reached the end of he json file and rhe name is not found, then add them
+						loyaltyPointsJson.push({
+							"id":currentViewers[i],
+							"points":1,
+						});
 					}
 				}
-
-				const csv = parse(source, { fields: ["viewer", "points"] });
-				fs.writeFileSync("./viewerLoyalPoints.csv", csv);
-			});
+			}
+			fs.writeFileSync('./config/loyaltypoints.json', JSON.stringify(loyaltyPointsJson)) //write the file
+		});
 	});
-	console.log("Updated current loyalty points!");
+
+	currentViewers = [];
 	return;
 }

@@ -17,35 +17,32 @@
     - !poll [Poll Question] | [Option 1] | [Option 2] | [Option 3] - creates a poll for audience to answer, unlimited number of options are possible, but only one poll allowed at a time (Mods and Streamer)
     - !closepoll - closes the currently active poll, sends a message saying; poll is closed, the number of votes from chat, and the vote distribution percentage (Mods and Streamer)
     - !answer [Option Number] - collects the poll vote from the user (Everyone)
+    - !addpoints @[TwitchUserName] [Amount of Points] - added entered in amount of points to the selected user (Mods and Streamer)
+    - !startgiveaway - opens a giveaway that views can enter (Mods and Streamer)
+    - !giveaway - adds the message sender to the giveaway, sender can only be entered once into a giveaway (Everyone)
+    - !closegiveaway - closes the current giveaway and randomly selects a winner (Mods and Streamer)
 - Notify chat when a viewer has; subscribed, re-subscribed, or started hosting the channel
 - Automatically time-out viewers (who are not mods or the streamer) for sending a link, without already having been permitted to send one
 - Send a promotional message, such as !follow, !twitchprime, !discord, or !loot, at random every 30 minutes
 - Automatically run a 30 second commercial every 30 minutes
+- Loyalty Points system that add 1 point to every person in the chat every 5 minutes
 
 **Installation/Setup:**
 
 1. Clone Repo
 2. `npm install -g typescript`
-3. `npm install` (`npm start` to run)
-4. Create a new file called "botInfo.js" within the same directory as app.js
-5. Paste this code snippet into botInfo.js:
+3. `npm install`
+4. Create a new folder called "config" in the root directory and a file called "constants.json" within config
+5. Paste this code snippet into constants.json:
     ~~~
-    module.exports = {
-        //Twitch API
-        username:
-        password:
-        clientID:
-        channel:
-
-        //Spotify API
-        spotifyClientID:
-        spotifyClientSecret:
-        spotifyOAuthToken:
-        spotifyRedirectURI:
-        spofityAPILink:
-
-        //Discord
-        discordLink:
+   {
+    "username":
+    "password":
+    "clientID":
+    "channel":
+    "spoiftyAPILink":
+    "discordLink":
+    "loyaltyPointURL":
     }
     ~~~
 6. Under Twitch API:
@@ -54,14 +51,11 @@
     * clientID: Bot's clientID, go here for setup: https://dev.twitch.tv/
     * channel: The name of the twitch channel you want the bot to connect to.
 7. Under Spotify API:
-    * spotifyClientID:  Bot's clientID, go here for setup: https://developer.spotify.com/
-    * spotifyClientSecret: Bot's client secret, go here for setup: https://developer.spotify.com/
-    * spotifyOAuthToken: Bot's Spotify OAUTH code, go here for setup: https://developer.spotify.com/
-    * spotifyRedirectURI: Bot's redirect URI, go here for setup: https://developer.spotify.com/
     * spoiftyAPILink: Connect Groke to your Spotify account, go here for setup: https://www.groke.se/twitch/spotify
 8. Under Discord:
     * discordLink: permanent invite link
-9. `npm start`
+9. `tsc`
+10. `npm start`
 
 ---
 
@@ -69,3 +63,9 @@
 
 * implement a command registry
 * implement command providers
+
+---
+
+## Contributors
+- Daniel Borg - [https://github.com/dborg291](https://github.com/dborg291)
+- Alex Weininger - [https://github.com/alexweininger](https://github.com/alexweininger)

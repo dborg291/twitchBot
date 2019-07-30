@@ -8,6 +8,8 @@ export class CommandHelpers {
 	 */
 	public static IsCommandAvailableToUser(badges: Badge[] | undefined, userBadges: Badges | undefined): boolean {
 
+		var allowedCommand: boolean = false;
+
 		if (!userBadges) {
 			throw new Error("user.badges is undefined.");
 		}
@@ -18,10 +20,10 @@ export class CommandHelpers {
 
 		badges.forEach(badge => {
 			if (userBadges && userBadges[badge]) {
-				return true;
+				allowedCommand = true;
 			}
 		});
 
-		return false;
+		return allowedCommand;
 	}
 }
