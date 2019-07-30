@@ -52,6 +52,7 @@ client.on("connected", (address: string, port: number) => {
 });
 
 client.on("chat", (channel: string, user: UserNoticeState, message: string, self: boolean) => {
+	fs.writeFileSync("./log.txt", message);
 	// Don't listen to my own messages..
 	if (self) return;
 	//console.log(user);
@@ -81,6 +82,7 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 			}
 		} else {
 			// command not found
+			console.info(`Command not found, message: ${message}`)
 		}
 	}
 
@@ -88,7 +90,7 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 	if (user["mod"] == true || channel.includes(user.username)) {
 		// console.log("Chat is from a mod");
 
-		if (message.toLowerCase().includes("!permit")) { 
+		if (message.toLowerCase().includes("!permit")) {
 			//Allows chaters to send one link
 			var atIndex = message.indexOf(" "); //Mods/Streamer must @ the user they want to permit so its correct
 			var permitedUser = message.substring(atIndex + 1); //find the start of the user's name
@@ -174,7 +176,7 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 		{
 			var name = message.substring(message.toLowerCase().indexOf("@")+1, message.toLowerCase().lastIndexOf(" ")).toLowerCase(); //find the name of the user to add points to
 			var ammount = parseInt(message.substring(message.lastIndexOf(" ")+1)) //find the ammount in which to add
-			
+
 			var data = fs.readFileSync("./config/loyaltypoints.json",'utf8'); //read the file
 			loyaltyPointsJson = JSON.parse(data); //parse the data
 
@@ -469,7 +471,7 @@ function loyaltyPoints() {
 				var data = fs.readFileSync("./config/loyaltypoints.json",'utf8');
 				loyaltyPointsJson = JSON.parse(data);
 			}
-			
+
 			for(var i = 0; i < currentViewers.length; i++) //run though all currentViewers
 			{
 				for(var j = 0; j < loyaltyPointsJson.length; j++){ //run through all viewers on the json file
