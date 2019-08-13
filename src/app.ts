@@ -88,7 +88,6 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 			// command not found
 			console.info(`Command not found, message: ${message}`)
 		}
-		return;
 	}
 
 	//MOD ONLY COMMANDS
