@@ -18,11 +18,11 @@ export class CommandHelpers {
 			return true;
 		}
 
-		badges.forEach(badge => {
-			if (userBadges && userBadges[badge]) {
-				allowedCommand = true;
+		for (let i = 0; i < badges.length; i++) {
+			if (userBadges && userBadges[badges[i]]) {
+				return true;
 			}
-		});
+		}
 
 		return allowedCommand;
 	}

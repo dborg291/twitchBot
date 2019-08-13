@@ -59,17 +59,6 @@ const TwitchPrimeCommand: ICommand = {
 	badges: [Badge.broadcaster, Badge.moderator]
 }
 
-const ComplexTestCommand: ICommand = {
-	key: "!testing",
-	action: (client: Client, config: IConfiguration) => {
-		client.action(
-			config.channel,
-			"If you wish to give back to the stream and you have Amazon Prime, you can get one free Twitch Prime subscription a month. You can subscribe by clicking above the stream or by clicking https://www.twitch.tv/subs/" + config.channel
-		);
-	},
-	badges: [Badge.broadcaster, Badge.moderator]
-}
-
 const Commands: ICommand[] = [HelloCommand, DiscordCommand, LootsCommand, CommandsCommand, FollowCommand, TwitchPrimeCommand];
 
 let commandList: Map<string, ICommand> = new Map();
