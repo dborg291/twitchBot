@@ -491,11 +491,6 @@ function loyaltyPoints() {
 				var data = fs.readFileSync("./config/loyaltypoints.json",'utf8');
 				loyaltyPointsJson = JSON.parse(data);
 			}
-<<<<<<< HEAD
-			
-=======
-
->>>>>>> ba291be3f81c03d4699b4fea50d9f276a85614c5
 			for(var i = 0; i < currentViewers.length; i++) //run though all currentViewers
 			{
 				for(var j = 0; j < loyaltyPointsJson.length; j++){ //run through all viewers on the json file
