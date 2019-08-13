@@ -77,11 +77,16 @@ client.on("chat", (channel: string, user: UserNoticeState, message: string, self
 		let command: ICommand | undefined = CommandList.get(commandText);
 		if (command) {
 			if (CommandHelpers.IsCommandAvailableToUser(command.badges, user.badges)) {
-				command.action(client, config, channel, user, message, self);
+				if(message.length > commandText.length){
+
+				}else{
+					command.action(client, config, channel, user, message, self);
+				}
 			}
 		} else {
 			// command not found
 		}
+		return;
 	}
 
 	//MOD ONLY COMMANDS
@@ -371,8 +376,13 @@ client.on("hosting", function(channel: string, target: string, viewers: number) 
 	return;
 });
 
+client.on("raided", (channel, username, viewers) => {
+    client.action(config.channel, "Thank you, " + channel + " for raiding with " + viewers + " viewers!");
+	return;
+});
+
 client.on("subscription", function(channel, username, method, message, userstate) {
-	client.action(config.channel, "Thank you, " + userstate["display-name"] + "for subscribing!");
+	client.action(config.channel, "Thank you, " + userstate["display-name"] + " for subscribing!");
 	return;
 });
 
@@ -382,7 +392,7 @@ client.on("subscription", function(channel, username, method, message, userstate
 // });
 
 client.on("resub", function(channel, username, months, message, userstate, methods) {
-	client.action(config.channel, userstate["display-name"] + "has resubscribed for " + months + "months!");
+	client.action(config.channel, userstate["display-name"] + "has resubscribed for " + months + " months!");
 	return;
 });
 
@@ -390,7 +400,7 @@ client.on("join", (channel, username, self) => {
 	if (welcomeMessage == true) {
 		client.action(config.channel, "Welcome to the channel " + username);
 	} else {
-		console.log("Welcome message is set to false, therefore did not welcome: " + username);
+		// console.log("Welcome message is set to false, therefore did not welcome: " + username);
 	}
 	return;
 });
@@ -404,7 +414,7 @@ function arrayRemove(arr: any[], value: string | undefined) {
 
 //send a random message to the chat
 function randomCommand() {
-	var random = Math.floor(Math.random() * 3) + 1; // returns a random integer from 1 to 10
+	var random = Math.floor(Math.random() * 4) + 1; // returns a random integer from 1 to 4
 	if (random == 1) {
 		//follow
 		client.action(
@@ -419,6 +429,12 @@ function randomCommand() {
 		client.action(
 			config.channel,
 			"Loots is way to send a donation like request that it completely free. After a short ad is shown on the top right, your message will apear. This is way to make sure I see your message as well supporting the stream. To send a messgae go to: https://loots.com/theborglive"
+		);
+	} else if(random == 4)
+	{
+		client.action(
+			config.channel,
+		"If you wish to give back to the stream and you have Amazon Prime, you can get one free Twitch Prime subscription a month. You can subscribe by clicking above the stream or by clicking https://www.twitch.tv/subs/" + config.channel
 		);
 	}
 	return;
